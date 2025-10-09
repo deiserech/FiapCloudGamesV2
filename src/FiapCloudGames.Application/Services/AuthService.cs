@@ -6,6 +6,7 @@ using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FiapCloudGames.Application.Services
@@ -14,24 +15,29 @@ namespace FiapCloudGames.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<AuthResponseDto?> Login(LoginDto loginDto)
         {
+            _logger.LogInformation("Tentativa de login para o email: {Email}", loginDto.Email);
             var user = await _userRepository.GetByEmailAsync(loginDto.Email);
 
             if (user == null || !user.VerifyPassword(loginDto.Password))
             {
+                _logger.LogWarning("Falha no login para o email: {Email}", loginDto.Email);
                 return null;
             }
 
             var token = GenerateJwtToken(user);
 
+            _logger.LogInformation("Login realizado com sucesso para o email: {Email}", loginDto.Email);
             return new AuthResponseDto
             {
                 Token = token,
@@ -43,8 +49,10 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<AuthResponseDto?> Register(RegisterDto registerDto)
         {
+            _logger.LogInformation("Tentativa de registro para o email: {Email}", registerDto.Email);
             if (await _userRepository.EmailExistsAsync(registerDto.Email))
             {
+                _logger.LogWarning("Registro falhou: email já existe: {Email}", registerDto.Email);
                 return null;
             }
 
@@ -61,6 +69,7 @@ namespace FiapCloudGames.Application.Services
 
             var token = GenerateJwtToken(user);
 
+            _logger.LogInformation("Usuário registrado com sucesso: {Email}", registerDto.Email);
             return new AuthResponseDto
             {
                 Token = token,

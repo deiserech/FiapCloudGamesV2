@@ -2,20 +2,24 @@ using Microsoft.EntityFrameworkCore;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Infrastructure.Data;
 using FiapCloudGames.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Infrastructure
 {
     public class LibraryRepository : ILibraryRepository
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<LibraryRepository> _logger;
 
-        public LibraryRepository(AppDbContext context)
+        public LibraryRepository(AppDbContext context, ILogger<LibraryRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<Library?> GetByIdAsync(int id)
         {
+            _logger.LogDebug("Buscando entrada da biblioteca por ID: {Id}", id);
             return await _context.Libraries
                 .Include(l => l.User)
                 .Include(l => l.Game)
@@ -24,6 +28,7 @@ namespace FiapCloudGames.Infrastructure
 
         public async Task<IEnumerable<Library>> GetByUserIdAsync(int userId)
         {
+            _logger.LogDebug("Buscando biblioteca do usuário: {UserId}", userId);
             return await _context.Libraries
                 .Include(l => l.User)
                 .Include(l => l.Game)
@@ -33,10 +38,9 @@ namespace FiapCloudGames.Infrastructure
 
         public async Task<Library> CreateAsync(Library library)
         {
+            _logger.LogDebug("Criando entrada na biblioteca para usuário {UserId} e jogo {GameId}", library.UserId, library.GameId);
             _context.Libraries.Add(library);
             await _context.SaveChangesAsync();
-
-            // Retorna a entrada da biblioteca com as entidades relacionadas incluídas
             return await GetByIdAsync(library.Id) ?? library;
         }
         public async Task<bool> UserOwnsGameAsync(int userId, int gameId)

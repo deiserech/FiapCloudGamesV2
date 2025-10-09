@@ -1,6 +1,7 @@
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Application.Services
 {
@@ -8,51 +9,65 @@ namespace FiapCloudGames.Application.Services
     {
         private readonly IPromotionRepository _promotionRepository;
         private readonly IGameRepository _gameRepository;
+        private readonly ILogger<PromotionService> _logger;
 
         private const int MaximumPromotionDurationDays = 30;
         private const int MaxActivePromotionsPerGame = 3;
 
-        public PromotionService(IPromotionRepository promotionRepository, IGameRepository gameRepository)
+        public PromotionService(IPromotionRepository promotionRepository, IGameRepository gameRepository, ILogger<PromotionService> logger)
         {
             _promotionRepository = promotionRepository;
             _gameRepository = gameRepository;
+            _logger = logger;
         }
+
 
         public async Task<Promotion?> GetPromotionByIdAsync(int id)
         {
+            _logger.LogInformation("Buscando promoção por ID: {Id}", id);
             return await _promotionRepository.GetByIdAsync(id);
         }
 
+
         public async Task<IEnumerable<Promotion>> GetActivePromotionsAsync()
         {
+            _logger.LogInformation("Buscando promoções ativas");
             return await _promotionRepository.GetActivePromotionsAsync();
         }
 
+
         public async Task<IEnumerable<Promotion>> GetActivePromotionsByGameIdAsync(int gameId)
         {
+            _logger.LogInformation("Buscando promoções ativas para o jogo {GameId}", gameId);
             return await _promotionRepository.GetActivePromotionsByGameIdAsync(gameId);
         }
 
         public async Task<Promotion> CreatePromotionAsync(Promotion promotion)
         {
+            _logger.LogInformation("Criando promoção para o jogo {GameId}", promotion.GameId);
             if (promotion.StartDate >= promotion.EndDate)
             {
+                _logger.LogWarning("Data de início maior ou igual à data de fim para promoção do jogo {GameId}", promotion.GameId);
                 throw new ArgumentException("A data de início deve ser anterior à data de fim.");
             }
 
             if (!await _gameRepository.ExistsAsync(promotion.GameId))
             {
+                _logger.LogWarning("Jogo não existe para promoção: {GameId}", promotion.GameId);
                 throw new ArgumentException("O jogo especificado não existe.");
             }
 
             if (promotion.DiscountPercentage <= 0 && (!promotion.DiscountAmount.HasValue || promotion.DiscountAmount <= 0))
             {
+                _logger.LogWarning("Desconto inválido para promoção do jogo {GameId}", promotion.GameId);
                 throw new ArgumentException("Deve ser especificado um desconto percentual ou um valor de desconto.");
             }
 
             await ValidatePromotionBusinessRules(promotion);
 
-            return await _promotionRepository.CreateAsync(promotion);
+            var created = await _promotionRepository.CreateAsync(promotion);
+            _logger.LogInformation("Promoção criada com sucesso para o jogo {GameId}", promotion.GameId);
+            return created;
         }
 
         public async Task<Promotion> UpdatePromotionAsync(Promotion promotion)
