@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Logs;
 using System.Text;
 using System.Text.Json.Serialization;
 using FiapCloudGames.Api.Middlewares;
@@ -118,6 +121,29 @@ namespace FiapCloudGames.Api
             services.AddScoped<IPromotionService, PromotionService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+
+            // OpenTelemetry Tracing e Logs via OTLP para New Relic
+            services.AddOpenTelemetry()
+                .WithTracing(builder =>
+                {
+                    builder
+                        .AddAspNetCoreInstrumentation()
+                        .SetResourceBuilder(OpenTelemetry.Resources.ResourceBuilder.CreateDefault().AddService("FiapCloudGames.Api"))
+                        .AddOtlpExporter(options =>
+                        {
+                            options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
+                            options.Headers = "api-key=SEU_NEW_RELIC_LICENSE_KEY";
+                        });
+                })
+                .WithLogging(builder =>
+                {
+                    // As propriedades IncludeScopes e ParseStateValues não existem em LoggerProviderBuilder
+                    builder.AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
+                        options.Headers = "api-key=SEU_NEW_RELIC_LICENSE_KEY";
+                    });
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -145,6 +171,7 @@ namespace FiapCloudGames.Api
                 endpoints.MapControllers();
             });
 
+            app.UseMiddleware<TracingEnrichmentMiddleware>();
             app.UseMiddleware<ErrorHandlingMiddleware>();
         }
     }
