@@ -132,7 +132,8 @@ namespace FiapCloudGames.Api
                         .AddOtlpExporter(options =>
                         {
                             options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
-                            options.Headers = "api-key=SEU_NEW_RELIC_LICENSE_KEY";
+                            var newRelicKey = Environment.GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY");
+                            options.Headers = $"api-key={newRelicKey}";
                         });
                 })
                 .WithLogging(builder =>
@@ -141,7 +142,8 @@ namespace FiapCloudGames.Api
                     builder.AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
-                        options.Headers = "api-key=SEU_NEW_RELIC_LICENSE_KEY";
+                        var newRelicKey = Environment.GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY");
+                        options.Headers = $"api-key={newRelicKey}";
                     });
                 });
         }
