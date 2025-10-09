@@ -1,0 +1,58 @@
+  - stage: Publish
+    displayName: 'Publish Artifacts'
+    dependsOn: Test
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: Publish
+        steps:
+          - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+            displayName: 'Publish API Project'
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: drop
+            displayName: 'Publish Artifact'
+
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: Build
+    displayName: 'Build Solution'
+    jobs:
+      - job: Build
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'
+
+          - script: dotnet restore FiapCloudGames.sln
+            displayName: 'Restore NuGet packages'
+
+          - script: dotnet build FiapCloudGames.sln --configuration $(buildConfiguration) --no-restore
+            displayName: 'Build Solution'
+
+  - stage: Test
+    displayName: 'Run Tests'
+    dependsOn: Build
+    jobs:
+      - job: Test
+        steps:
+          - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
+            displayName: 'Run Unit Tests'
+
+

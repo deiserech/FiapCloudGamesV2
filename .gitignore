@@ -64,3 +64,5 @@ nunit-*.xml
 /FiapCloudGames/.vs/ProjectEvaluation
 /Es.md
 /Screenshot 2025-08-04 200533.png
+/.vs
+/clean.ps1
