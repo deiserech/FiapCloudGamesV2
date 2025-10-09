@@ -1,17 +1,3 @@
-  - stage: Publish
-    displayName: 'Publish Artifacts'
-    dependsOn: Test
-  condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    jobs:
-      - job: Publish
-        steps:
-          - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-            displayName: 'Publish API Project'
-
-          - publish: $(Build.ArtifactStagingDirectory)
-            artifact: drop
-            displayName: 'Publish Artifact'
-
 trigger:
   branches:
     include:
@@ -55,4 +41,17 @@ stages:
           - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
             displayName: 'Run Unit Tests'
 
+  - stage: Publish
+    displayName: 'Publish Artifacts'
+    dependsOn: Test
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: Publish
+        steps:
+          - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+            displayName: 'Publish API Project'
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: drop
+            displayName: 'Publish Artifact'
 
