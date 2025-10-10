@@ -1,9 +1,10 @@
-﻿using FiapCloudGames.Application.Services;
+using FiapCloudGames.Application.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging; // Adicionado para ILogger
 
 namespace FiapCloudGames.Tests.Services
 {
@@ -11,13 +12,19 @@ namespace FiapCloudGames.Tests.Services
     {
         private readonly Mock<IPromotionRepository> _mockPromotionRepository;
         private readonly Mock<IGameRepository> _mockGameRepository;
+        private readonly Mock<ILogger<PromotionService>> _mockLogger; // Adicionado
         private readonly PromotionService _promotionService;
 
         public PromotionServiceTests()
         {
             _mockPromotionRepository = new Mock<IPromotionRepository>();
             _mockGameRepository = new Mock<IGameRepository>();
-            _promotionService = new PromotionService(_mockPromotionRepository.Object, _mockGameRepository.Object);
+            _mockLogger = new Mock<ILogger<PromotionService>>(); // Adicionado
+            _promotionService = new PromotionService(
+                _mockPromotionRepository.Object,
+                _mockGameRepository.Object,
+                _mockLogger.Object // Adicionado
+            );
         }
 
         [Fact]
@@ -193,11 +200,11 @@ namespace FiapCloudGames.Tests.Services
             };
 
             var existingPromotions = new List<Promotion>
-    {
-        new Promotion { Id = 1, GameId = 1 },
-        new Promotion { Id = 2, GameId = 1 },
-        new Promotion { Id = 3, GameId = 1 }
-    };
+            {
+                new Promotion { Id = 1, GameId = 1 },
+                new Promotion { Id = 2, GameId = 1 },
+                new Promotion { Id = 3, GameId = 1 }
+            };
 
             _mockGameRepository.Setup(repo => repo.ExistsAsync(promotion.GameId))
                               .ReturnsAsync(true);
@@ -227,10 +234,10 @@ namespace FiapCloudGames.Tests.Services
             };
 
             var existingPromotions = new List<Promotion>
-    {
-        new Promotion { Id = 1, GameId = 1 },
-        new Promotion { Id = 2, GameId = 1 }
-    }; // Only 2 existing promotions
+            {
+                new Promotion { Id = 1, GameId = 1 },
+                new Promotion { Id = 2, GameId = 1 }
+            }; // Only 2 existing promotions
 
             _mockGameRepository.Setup(repo => repo.ExistsAsync(promotion.GameId))
                               .ReturnsAsync(true);
@@ -272,9 +279,9 @@ namespace FiapCloudGames.Tests.Services
             };
 
             var activePromotions = new List<Promotion>
-    {
-        existingPromotion // Only the current promotion
-    };
+            {
+                existingPromotion // Only the current promotion
+            };
 
             _mockPromotionRepository.Setup(repo => repo.GetByIdAsync(updatedPromotion.Id))
                                    .ReturnsAsync(existingPromotion);

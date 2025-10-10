@@ -1,10 +1,11 @@
-﻿using FiapCloudGames.Application.Services;
+using FiapCloudGames.Application.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging; // Adicionado para ILogger
 
 namespace FiapCloudGames.Tests.Services
 {
@@ -14,6 +15,7 @@ namespace FiapCloudGames.Tests.Services
         private readonly Mock<IUserRepository> _mockUserRepo;
         private readonly Mock<IGameRepository> _mockGameRepo;
         private readonly Mock<IPromotionService> _mockPromotionService;
+        private readonly Mock<ILogger<LibraryService>> _mockLogger; // Adicionado
         private readonly LibraryService _libraryService;
 
         public LibraryServiceTests()
@@ -22,11 +24,13 @@ namespace FiapCloudGames.Tests.Services
             _mockUserRepo = new Mock<IUserRepository>();
             _mockGameRepo = new Mock<IGameRepository>();
             _mockPromotionService = new Mock<IPromotionService>();
+            _mockLogger = new Mock<ILogger<LibraryService>>(); // Adicionado
             _libraryService = new LibraryService(
                 _mockLibraryRepo.Object,
                 _mockUserRepo.Object,
                 _mockGameRepo.Object,
-                _mockPromotionService.Object
+                _mockPromotionService.Object,
+                _mockLogger.Object // Adicionado
             );
         }
 

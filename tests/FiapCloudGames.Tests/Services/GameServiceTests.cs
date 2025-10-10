@@ -6,22 +6,25 @@ using FiapCloudGames.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using FiapCloudGames.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging; // Adicionado para ILogger
 
 namespace FiapCloudGames.Tests.Services
 {
     public class GameServiceTests
     {
         private readonly Mock<IGameRepository> _mockGameRepository;
+        private readonly Mock<ILogger<GameService>> _mockLogger; // Adicionado
         private readonly GameService _gameService;
 
         public GameServiceTests()
         {
             _mockGameRepository = new Mock<IGameRepository>();
-            _gameService = new GameService(_mockGameRepository.Object);
+            _mockLogger = new Mock<ILogger<GameService>>(); // Adicionado
+            _gameService = new GameService(_mockGameRepository.Object, _mockLogger.Object); // Corrigido
         }
 
         [Fact]
-        public  async Task Cadastrar_WithValidGame_ShouldCallRepositoryAdd()
+        public async Task Cadastrar_WithValidGame_ShouldCallRepositoryAdd()
         {
             // Arrange
             var game = new Game
@@ -40,7 +43,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task ObterPorId_WithValidId_ShouldReturnGame()
+        public async Task ObterPorId_WithValidId_ShouldReturnGame()
         {
             // Arrange
             var gameId = 1;
@@ -67,7 +70,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task ObterPorId_WithInvalidId_ShouldReturnNull()
+        public async Task ObterPorId_WithInvalidId_ShouldReturnNull()
         {
             // Arrange
             var invalidId = 999;
@@ -83,7 +86,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task ListarTodos_WithGamesInRepository_ShouldReturnAllGames()
+        public async Task ListarTodos_WithGamesInRepository_ShouldReturnAllGames()
         {
             // Arrange
             var games = new List<Game>

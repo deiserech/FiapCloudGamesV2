@@ -5,18 +5,21 @@ using FiapCloudGames.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging; // Adicionado para ILogger
 
 namespace FiapCloudGames.Tests.Services
 {
     public class UserServiceTests
     {
         private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<ILogger<UserService>> _mockLogger; // Adicionado
         private readonly UserService _userService;
 
         public UserServiceTests()
         {
             _mockUserRepository = new Mock<IUserRepository>();
-            _userService = new UserService(_mockUserRepository.Object);
+            _mockLogger = new Mock<ILogger<UserService>>(); // Adicionado
+            _userService = new UserService(_mockUserRepository.Object, _mockLogger.Object); // Corrigido
         }
 
         #region ObterPorId Tests
@@ -66,7 +69,6 @@ namespace FiapCloudGames.Tests.Services
             result.Should().BeNull();
             _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
         }
-
 
         [Fact]
         public async Task TaskObterPorId_WithAdministratorUser_ShouldReturnCorrectRole()

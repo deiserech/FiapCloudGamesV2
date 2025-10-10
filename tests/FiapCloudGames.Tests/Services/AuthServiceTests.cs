@@ -1,15 +1,14 @@
-using Xunit;
-using Moq;
-using FluentAssertions;
-using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using FiapCloudGames.Application.Services;
 using FiapCloudGames.Domain.DTOs;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Enums;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Collections.Generic;
 using FiapCloudGames.Domain.Interfaces.Repositories;
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
 namespace FiapCloudGames.Tests.Services
 {
@@ -17,16 +16,22 @@ namespace FiapCloudGames.Tests.Services
     {
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IConfiguration> _mockConfiguration;
+        private readonly Mock<ILogger<AuthService>> _mockLogger; // Adicionado
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockConfiguration = new Mock<IConfiguration>();
-            
+            _mockLogger = new Mock<ILogger<AuthService>>(); // Adicionado
+
             SetupJwtConfiguration();
-            
-            _authService = new AuthService(_mockUserRepository.Object, _mockConfiguration.Object);
+
+            _authService = new AuthService(
+                _mockUserRepository.Object,
+                _mockConfiguration.Object,
+                _mockLogger.Object // Adicionado
+            );
         }
 
         private void SetupJwtConfiguration()
@@ -43,7 +48,7 @@ namespace FiapCloudGames.Tests.Services
         #region Login Tests
 
         [Fact]
-        public  async Task Login_WithValidCredentials_ShouldReturnAuthResponse()
+        public async Task Login_WithValidCredentials_ShouldReturnAuthResponse()
         {
             // Arrange
             var loginDto = new LoginDto
@@ -81,7 +86,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task Login_WithNonExistentEmail_ShouldReturnNull()
+        public async Task Login_WithNonExistentEmail_ShouldReturnNull()
         {
             // Arrange
             var loginDto = new LoginDto
@@ -101,7 +106,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task Login_WithInvalidPassword_ShouldReturnNull()
+        public async Task Login_WithInvalidPassword_ShouldReturnNull()
         {
             // Arrange
             var loginDto = new LoginDto
@@ -130,7 +135,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task Login_WithAdministratorUser_ShouldReturnValidAuthResponse()
+        public async Task Login_WithAdministratorUser_ShouldReturnValidAuthResponse()
         {
             // Arrange
             var loginDto = new LoginDto
@@ -165,7 +170,7 @@ namespace FiapCloudGames.Tests.Services
         #region Register Tests
 
         [Fact]
-        public  async Task Register_WithValidData_ShouldReturnAuthResponse()
+        public async Task Register_WithValidData_ShouldReturnAuthResponse()
         {
             // Arrange
             var registerDto = new RegisterDto
@@ -177,7 +182,14 @@ namespace FiapCloudGames.Tests.Services
             };
 
             _mockUserRepository.Setup(repo => repo.EmailExistsAsync(registerDto.Email)).ReturnsAsync(false);
-            _mockUserRepository.Setup(repo => repo.CreateAsync(It.IsAny<User>())).Verifiable();
+
+            // Mock CreateAsync para retornar o usuário com Id definido
+            _mockUserRepository.Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+                .ReturnsAsync((User u) =>
+                {
+                    u.Id = 10; // Simula atribuição de Id pelo repositório
+                    return u;
+                });
 
             // Act
             var result = await _authService.Register(registerDto);
@@ -186,7 +198,7 @@ namespace FiapCloudGames.Tests.Services
             result.Should().NotBeNull();
             result!.Email.Should().Be(registerDto.Email);
             result.Name.Should().Be(registerDto.Name);
-            result.UserId.Should().Be(0); // Default value since user is new
+            result.UserId.Should().Be(10); // Agora espera o Id atribuído
             result.Token.Should().NotBeNullOrEmpty();
 
             // Verify JWT token
@@ -198,7 +210,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task Register_WithExistingEmail_ShouldReturnNull()
+        public async Task Register_WithExistingEmail_ShouldReturnNull()
         {
             // Arrange
             var registerDto = new RegisterDto
@@ -221,7 +233,7 @@ namespace FiapCloudGames.Tests.Services
         }
 
         [Fact]
-        public  async Task Register_WithAdministratorRole_ShouldCreateAdminUser()
+        public async Task Register_WithAdministratorRole_ShouldCreateAdminUser()
         {
             // Arrange
             var registerDto = new RegisterDto
@@ -232,10 +244,15 @@ namespace FiapCloudGames.Tests.Services
                 Role = UserRole.Admin
             };
 
-            User capturedUser = null!;
+            User? capturedUser = null;
             _mockUserRepository.Setup(repo => repo.EmailExistsAsync(registerDto.Email)).ReturnsAsync(false);
             _mockUserRepository.Setup(repo => repo.CreateAsync(It.IsAny<User>()))
-                              .Callback<User>(user => capturedUser = user);
+                .Callback<User>(user => capturedUser = user)
+                .ReturnsAsync((User u) =>
+                {
+                    u.Id = 20;
+                    return u;
+                });
 
             // Act
             var result = await _authService.Register(registerDto);
@@ -243,14 +260,14 @@ namespace FiapCloudGames.Tests.Services
             // Assert
             result.Should().NotBeNull();
             capturedUser.Should().NotBeNull();
-            capturedUser.Role.Should().Be(UserRole.Admin);
+            capturedUser!.Role.Should().Be(UserRole.Admin);
             capturedUser.Name.Should().Be(registerDto.Name);
             capturedUser.Email.Should().Be(registerDto.Email);
             capturedUser.PasswordHash.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
-        public  async Task Register_ShouldHashPassword()
+        public async Task Register_ShouldHashPassword()
         {
             // Arrange
             var registerDto = new RegisterDto
@@ -261,10 +278,15 @@ namespace FiapCloudGames.Tests.Services
                 Role = UserRole.User
             };
 
-            User capturedUser = null!;
+            User? capturedUser = null;
             _mockUserRepository.Setup(repo => repo.EmailExistsAsync(registerDto.Email)).ReturnsAsync(false);
             _mockUserRepository.Setup(repo => repo.CreateAsync(It.IsAny<User>()))
-                              .Callback<User>(user => capturedUser = user);
+                .Callback<User>(user => capturedUser = user)
+                .ReturnsAsync((User u) =>
+                {
+                    u.Id = 30;
+                    return u;
+                });
 
             // Act
             var result = await _authService.Register(registerDto);
@@ -272,7 +294,7 @@ namespace FiapCloudGames.Tests.Services
             // Assert
             result.Should().NotBeNull();
             capturedUser.Should().NotBeNull();
-            capturedUser.PasswordHash.Should().NotBe(registerDto.Password);
+            capturedUser!.PasswordHash.Should().NotBe(registerDto.Password);
             capturedUser.PasswordHash.Should().NotBeNullOrEmpty();
             capturedUser.VerifyPassword(registerDto.Password).Should().BeTrue();
         }
