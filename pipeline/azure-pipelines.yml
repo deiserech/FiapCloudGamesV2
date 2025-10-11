@@ -21,8 +21,6 @@ stages:
     jobs:
       - job: Build
         steps:
-          - script: dotnet clean FiapCloudGames.sln --configuration $(buildConfiguration)
-            displayName: "Clean Solution"
           - task: UseDotNet@2
             inputs:
               packageType: "sdk"
@@ -31,12 +29,17 @@ stages:
           - script: dotnet restore FiapCloudGames.sln
             displayName: "Restore NuGet packages"
 
-          - script: dotnet build FiapCloudGames.sln --configuration $(buildConfiguration) --no-restore
+          - task: DotNetCoreCLI@2
+            inputs:
+              azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+              command: 'build'
+              projects: 'FiapCloudGames.sln'
+              arguments: '--configuration $(buildConfiguration) --no-restore --os linux-x64'
             displayName: "Build Solution"
 
           - publish: $(Build.SourcesDirectory)/tests/FiapCloudGames.Tests/bin/Release/net8.0/
-            artifact: test-binaries
-            displayName: "Publicar binários de teste"
+            artifact: fiap-cloud-games-binaries
+            displayName: "Publish Binaries"
 
   - stage: Test
     displayName: "Run Tests"
@@ -66,7 +69,7 @@ stages:
               command: 'publish'
               publishWebProjects: false
               projects: '..\test-binaries\FiapCloudGames.Api.dll'
-              arguments: '--no-build --output $(Build.ArtifactStagingDirectory) --force-rm -t fiap-cloud-games-api'
+              arguments: '--no-build --output $(Build.ArtifactStagingDirectory) -t fiap-cloud-games-api'
               zipAfterPublish: false
               modifyOutputPath: false
 
