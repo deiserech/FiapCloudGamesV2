@@ -13,51 +13,60 @@ pool:
   name: FiapCloudGames
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
 
 stages:
   - stage: Build
-    displayName: 'Build Solution'
+    displayName: "Build Solution"
     jobs:
       - job: Build
         steps:
           - script: dotnet clean FiapCloudGames.sln --configuration $(buildConfiguration)
-            displayName: 'Clean Solution'        
+            displayName: "Clean Solution"
           - task: UseDotNet@2
             inputs:
-              packageType: 'sdk'
-              version: '8.x'
+              packageType: "sdk"
+              version: "8.x"
 
           - script: dotnet restore FiapCloudGames.sln
-            displayName: 'Restore NuGet packages'
+            displayName: "Restore NuGet packages"
 
           - script: dotnet build FiapCloudGames.sln --configuration $(buildConfiguration) --no-restore
-            displayName: 'Build Solution'
+            displayName: "Build Solution"
+
+          - publish: $(Build.SourcesDirectory)/tests/FiapCloudGames.Tests/bin/Release/net8.0/
+            artifact: test-binaries
+            displayName: "Publicar binários de teste"
 
   - stage: Test
-    displayName: 'Run Tests'
+    displayName: "Run Tests"
     dependsOn: Build
     jobs:
       - job: Test
         steps:
+          - download: current
+            artifact: test-binaries
+            displayName: "Baixar binários de teste"
+
           - script: cd
-            displayName: 'Mostrar diretório atual'
-          - script: dir tests\FiapCloudGames.Tests\bin\Release\net8.0\
-            displayName: 'Listar arquivos de teste'
+            displayName: "Mostrar diretório atual"
+          
+          - script: dir $(Pipeline.Workspace)\test-binaries
+            displayName: "Listar arquivos de teste (artefato)"
+          
           - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
-            displayName: 'Run Unit Tests'
+            displayName: "Run Unit Tests"
 
   - stage: Publish
-    displayName: 'Publish Artifacts'
+    displayName: "Publish Artifacts"
     dependsOn: Test
     condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
       - job: Publish
         steps:
           - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-            displayName: 'Publish API Project'
+            displayName: "Publish API Project"
 
           - publish: $(Build.ArtifactStagingDirectory)
             artifact: drop
-            displayName: 'Publish Artifact'
-
+            displayName: "Publish Artifact"
