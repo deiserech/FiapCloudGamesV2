@@ -10,7 +10,7 @@ pr:
       - main
 
 pool:
-  name: FiapCloudGames
+  vmImage: 'windows-latest'
 
 variables:
   buildConfiguration: 'Release'
@@ -21,6 +21,8 @@ stages:
     jobs:
       - job: Build
         steps:
+          - script: dotnet clean FiapCloudGames.sln --configuration $(buildConfiguration)
+            displayName: 'Clean Solution'        
           - task: UseDotNet@2
             inputs:
               packageType: 'sdk'
@@ -38,6 +40,8 @@ stages:
     jobs:
       - job: Test
         steps:
+          - script: dir tests\FiapCloudGames.Tests\bin\Release\net8.0\
+            displayName: 'Listar arquivos de teste'
           - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
             displayName: 'Run Unit Tests'
 
