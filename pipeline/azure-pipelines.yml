@@ -77,6 +77,6 @@ stages:
               displayName: 'Push Docker image to ACR'
               inputs:
                 command: push
-                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
+                repository: fiap-cloud-games-api
                 tags: latest
                 containerRegistry: 'fiapcloudgames-acr-connection'
