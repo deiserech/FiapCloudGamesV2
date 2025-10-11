@@ -63,20 +63,20 @@ stages:
     jobs:
       - job: Publish
         steps:
-          - task: DotNetCoreCLI@2
-            inputs:
-              azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
-              command: 'publish'
-              publishWebProjects: false
-              projects: '..\test-binaries\FiapCloudGames.Api.dll'
-              arguments: '--no-build --output $(Build.ArtifactStagingDirectory) -t fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api'
-              zipAfterPublish: false
-              modifyOutputPath: false
+            - task: Docker@2
+              displayName: 'Build Docker image'
+              inputs:
+                command: build
+                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
+                Dockerfile: src/FiapCloudGames.Api/Dockerfile
+                tags: latest
+                buildContext: .
+                containerRegistry: 'fiapcloudgames-acr-connection'
 
-          # - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) 
-
-          #   displayName: "Publish API Project"
-
-          # - publish: $(Build.ArtifactStagingDirectory)
-          #   artifact: drop
-          #   displayName: "Publish Artifact"
+            - task: Docker@2
+              displayName: 'Push Docker image to ACR'
+              inputs:
+                command: push
+                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
+                tags: latest
+                containerRegistry: 'fiapcloudgames-acr-connection'
