@@ -44,18 +44,26 @@ stages:
     jobs:
       - job: Test
         steps:
-          - download: current
-            artifact: test-binaries
-            displayName: "Baixar binários de teste"
+          # - download: current
+          #   artifact: test-binaries
+          #   displayName: "Baixar binários de teste"
 
-          - script: cd
-            displayName: "Mostrar diretório atual"
+          # - script: cd
+          #   displayName: "Mostrar diretório atual"
           
-          - script: dir $(Pipeline.Workspace)\test-binaries
-            displayName: "Listar arquivos de teste (artefato)"
+          # - script: dir $(Pipeline.Workspace)\test-binaries
+          #   displayName: "Listar arquivos de teste (artefato)"
           
-          - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
-            displayName: "Run Unit Tests"
+          # - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
+          #   displayName: "Run Unit Tests"
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+              command: 'test'
+              projects: '..\test-binaries\FiapCloudGames.Tests.dll'
+              arguments: '--no-build --collect:"XPlat Code Coverage"'
+              testRunTitle: 'Test'
 
   - stage: Publish
     displayName: "Publish Artifacts"
