@@ -23,4 +23,20 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 # Garante que a aplicação escute na porta 80 em todas as interfaces
 ENV ASPNETCORE_URLS=http://0.0.0.0:80
+
+# Instala o agente New Relic
+RUN apt-get update && apt-get install -y curl ca-certificates gnupg \
+	&& mkdir -p /etc/apt/keyrings \
+	&& echo 'deb [signed-by=/etc/apt/keyrings/newrelic-apt.gpg] http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
+	&& curl -fsSL https://download.newrelic.com/NEWRELIC_APT_2DAD550E.public | gpg --dearmor > /etc/apt/keyrings/newrelic-apt.gpg \
+	&& apt-get update \
+	&& apt-get install -y newrelic-dotnet-agent \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Habilita o agente New Relic
+ENV CORECLR_ENABLE_PROFILING=1 \
+	CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+	CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
+	CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so
+
 ENTRYPOINT ["dotnet", "FiapCloudGames.Api.dll"]
