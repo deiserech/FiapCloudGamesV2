@@ -2,6 +2,23 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble AS base
 WORKDIR /app
 EXPOSE 80
 
+# Install the agent
+RUN apt-get update && apt-get install -y curl ca-certificates gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://download.newrelic.com/NEWRELIC_APT_2DAD550E.public | gpg --dearmor -o /etc/apt/keyrings/newrelic-apt.gpg \
+    && echo 'deb [signed-by=/etc/apt/keyrings/newrelic-apt.gpg] http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
+    && apt-get update \
+    && apt-get install -y newrelic-dotnet-agent \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable the agent
+ENV CORECLR_ENABLE_PROFILING=1 \
+CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
+CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so \
+NEW_RELIC_LICENSE_KEY=6e2fe482c8a028793b8395e206e104a8FFFFNRAL \
+NEW_RELIC_APP_NAME="fiapcloudgames-newrelic"
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -23,20 +40,5 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 # Garante que a aplicação escute na porta 80 em todas as interfaces
 ENV ASPNETCORE_URLS=http://0.0.0.0:80
-
-# Instala o agente New Relic
-RUN apt-get update && apt-get install -y curl ca-certificates gnupg \
-	&& mkdir -p /etc/apt/keyrings \
-	&& echo 'deb [signed-by=/etc/apt/keyrings/newrelic-apt.gpg] http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
-	&& curl -fsSL https://download.newrelic.com/NEWRELIC_APT_2DAD550E.public | gpg --dearmor > /etc/apt/keyrings/newrelic-apt.gpg \
-	&& apt-get update \
-	&& apt-get install -y newrelic-dotnet-agent \
-	&& rm -rf /var/lib/apt/lists/*
-
-# Habilita o agente New Relic
-ENV CORECLR_ENABLE_PROFILING=1 \
-	CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
-	CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
-	CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so
 
 ENTRYPOINT ["dotnet", "FiapCloudGames.Api.dll"]
