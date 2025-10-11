@@ -44,19 +44,6 @@ stages:
     jobs:
       - job: Test
         steps:
-          # - download: current
-          #   artifact: test-binaries
-          #   displayName: "Baixar binários de teste"
-
-          # - script: cd
-          #   displayName: "Mostrar diretório atual"
-          
-          # - script: dir $(Pipeline.Workspace)\test-binaries
-          #   displayName: "Listar arquivos de teste (artefato)"
-          
-          # - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
-          #   displayName: "Run Unit Tests"
-
           - task: DotNetCoreCLI@2
             inputs:
               azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
@@ -72,9 +59,20 @@ stages:
     jobs:
       - job: Publish
         steps:
-          - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-            displayName: "Publish API Project"
+          - task: DotNetCoreCLI@2
+            inputs:
+              azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+              command: 'publish'
+              publishWebProjects: false
+              projects: '..\test-binaries\FiapCloudGames.Api.dll'
+              arguments: '--no-build --output $(Build.ArtifactStagingDirectory) --force-rm -t fiap-cloud-games-api'
+              zipAfterPublish: false
+              modifyOutputPath: false
 
-          - publish: $(Build.ArtifactStagingDirectory)
-            artifact: drop
-            displayName: "Publish Artifact"
+          # - script: dotnet publish src/FiapCloudGames.Api/FiapCloudGames.Api.csproj --configuration $(buildConfiguration) 
+
+          #   displayName: "Publish API Project"
+
+          # - publish: $(Build.ArtifactStagingDirectory)
+          #   artifact: drop
+          #   displayName: "Publish Artifact"
