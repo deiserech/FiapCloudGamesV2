@@ -63,6 +63,15 @@ stages:
     jobs:
       - job: Publish
         steps:
+            - task: AzureCLI@2
+              inputs:
+                azureSubscription: 'Azure for Students(1)(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+                scriptType: 'ps'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az webapp extension set --resource-group fiapcloudgames-rg --name fiapcloudgames-api --extension-type newrelic.apm.windows
+                  az webapp restart --resource-group fiapcloudgames-rg --name fiapcloudgames-api
+                  
             - task: Docker@2
               displayName: 'Build Docker image'
               inputs:
