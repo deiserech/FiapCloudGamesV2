@@ -69,8 +69,8 @@ stages:
                 scriptType: 'ps'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az webapp extension set --resource-group fiapcloudgames-rg --name fiapcloudgames-api --extension-type newrelic.apm.windows
-                  az webapp restart --resource-group fiapcloudgames-rg --name fiapcloudgames-api
+                  az webapp extension set --resource-group rg-fiapcloudgames --name fiapcloudgames-api --extension-type newrelic.apm.windows
+                  az webapp restart --resource-group rg-fiapcloudgames --name fiapcloudgames-api
                   
             - task: Docker@2
               displayName: 'Build Docker image'
