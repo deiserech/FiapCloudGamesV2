@@ -40,6 +40,8 @@ stages:
     jobs:
       - job: Test
         steps:
+          - script: cd
+            displayName: 'Mostrar diretório atual'
           - script: dir tests\FiapCloudGames.Tests\bin\Release\net8.0\
             displayName: 'Listar arquivos de teste'
           - script: dotnet test FiapCloudGames.sln --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"
