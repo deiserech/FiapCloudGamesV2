@@ -15,13 +15,46 @@ namespace FiapCloudGames.Api
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var process = Process.GetCurrentProcess();
+            var lastCpuTime = process.TotalProcessorTime;
+            var lastTime = DateTime.UtcNow;
+            int processorCount = Environment.ProcessorCount;
+
             while (!stoppingToken.IsCancellationRequested)
             {
+                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
                 process.Refresh();
                 var memoryMb = process.WorkingSet64 / (1024 * 1024);
                 var cpuTime = process.TotalProcessorTime.TotalSeconds;
-                _logger.LogInformation("ResourceUsage | memory_mb={MemoryMB} | cpu_time_s={CpuTime}", memoryMb, cpuTime);
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+
+                // Calcular CPU usage (%)
+                var now = DateTime.UtcNow;
+                var cpuUsedMs = (process.TotalProcessorTime - lastCpuTime).TotalMilliseconds;
+                var elapsedMs = (now - lastTime).TotalMilliseconds;
+                var cpuUsage = (elapsedMs > 0) ? (cpuUsedMs / (elapsedMs * processorCount)) * 100.0 : 0.0;
+
+                double? memUsagePct = null;
+                double? memLimitMb = null;
+                try
+                {
+                    var memLimitStr = File.ReadAllText("/sys/fs/cgroup/memory/memory.limit_in_bytes");
+                    if (long.TryParse(memLimitStr, out var memLimitBytes) && memLimitBytes > 0 && memLimitBytes < long.MaxValue)
+                    {
+                        memLimitMb = memLimitBytes / (1024.0 * 1024.0);
+                        memUsagePct = (memLimitMb > 0) ? (memoryMb / memLimitMb) * 100.0 : null;
+                    }
+                }
+                catch {  }
+
+                lastCpuTime = process.TotalProcessorTime;
+                lastTime = now;
+
+                _logger.LogInformation("cpu_time_s={CpuTime}", cpuTime);
+                _logger.LogInformation("cpu_usage_pct={CpuUsage}", cpuUsage);
+                _logger.LogInformation("memory_mb={MemoryMB}", memoryMb);
+                if (memLimitMb.HasValue)
+                    _logger.LogInformation("memory_limit_mb={MemoryLimitMB}", memLimitMb);
+                if (memUsagePct.HasValue)
+                    _logger.LogInformation("mem_usage_pct={MemUsagePct}", memUsagePct);
             }
         }
     }
