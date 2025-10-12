@@ -71,7 +71,9 @@ stages:
                 command: build
                 repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
                 Dockerfile: src/FiapCloudGames.Api/Dockerfile
-                tags: latest
+                tags: |
+                  latest
+                  $(Build.BuildId)
                 buildContext: .
                 containerRegistry: 'fiapcloudgames-acr-connection'
                 buildArguments: --no-cache
@@ -80,6 +82,8 @@ stages:
               displayName: 'Push Docker image to ACR'
               inputs:
                 command: push
-                repository: fiap-cloud-games-api
-                tags: latest
+                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
+                tags: |
+                  latest
+                  $(Build.BuildId)
                 containerRegistry: 'fiapcloudgames-acr-connection'
