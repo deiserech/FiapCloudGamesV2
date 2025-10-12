@@ -47,14 +47,12 @@ namespace FiapCloudGames.Api
 
                 lastCpuTime = process.TotalProcessorTime;
                 lastTime = now;
-
-                _logger.LogInformation("cpu_time_s={CpuTime}", cpuTime);
-                _logger.LogInformation("cpu_usage_pct={CpuUsage}", cpuUsage);
-                _logger.LogInformation("memory_mb={MemoryMB}", memoryMb);
+                var logMsg = $"ResourceUsage | cpu_time_s={cpuTime} | cpu_usage_pct={cpuUsage} | memory_mb={memoryMb}";
                 if (memLimitMb.HasValue)
-                    _logger.LogInformation("memory_limit_mb={MemoryLimitMB}", memLimitMb);
+                    logMsg += $" | memory_limit_mb={memLimitMb}";
                 if (memUsagePct.HasValue)
-                    _logger.LogInformation("mem_usage_pct={MemUsagePct}", memUsagePct);
+                    logMsg += $" | mem_usage_pct={memUsagePct}";
+                _logger.LogInformation(logMsg);
             }
         }
     }
