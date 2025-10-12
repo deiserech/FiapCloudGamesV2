@@ -40,28 +40,25 @@ stages:
           - publish: $(Build.SourcesDirectory)/tests/FiapCloudGames.Tests/bin/Release/net8.0/
             artifact: fiap-cloud-games-binaries
             displayName: "Publish Binaries"
-  # TODO: Enable tests after fixing testing app
-  # - stage: Test
-  #   displayName: "Run Tests"
-  #   dependsOn: Build
-  #   jobs:
-  #     - job: Test
-  #       steps:
-  #         - task: DotNetCoreCLI@2
-  #           inputs:
-  #             azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
-  #             command: 'test'
-  #             projects: '..\test-binaries\FiapCloudGames.Tests.dll'
-  #             arguments: '--no-build --collect:"XPlat Code Coverage"'
-  #             testRunTitle: 'Test'
+  - stage: Test
+    displayName: "Run Tests"
+    dependsOn: Build
+    jobs:
+      - job: Test
+        steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+              command: 'test'
+              projects: '..\test-binaries\FiapCloudGames.Tests.dll'
+              arguments: '--no-build --collect:"XPlat Code Coverage"'
+              testRunTitle: 'Test'
 
   - stage: Publish
     displayName: "Publish Artifacts"
     dependsOn: Build
-    # TODO: Enable tests after fixing testing app
-    # dependsOn: Test
-    # condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    condition: succeeded()
+    dependsOn: Test
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
       - job: Publish
         steps:
@@ -87,3 +84,12 @@ stages:
                   latest
                   $(Build.BuildId)
                 containerRegistry: 'fiapcloudgames-acr-connection'
+
+            - task: AzureCLI@2
+              displayName: 'Set App Service Plan to 2 Instances'
+              inputs:
+                azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
+                scriptType: 'ps'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az appservice plan update --name ASP-rgfiapcloudgames-85ab --resource-group rg-fiapcloudgames --number-of-workers 2
