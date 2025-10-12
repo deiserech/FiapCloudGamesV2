@@ -1,5 +1,3 @@
-using FiapCloudGames.Api.Extensions;
-
 namespace FiapCloudGames.Api
 {
     public class Program
