@@ -14,7 +14,7 @@ namespace FiapCloudGames.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                })
-         .AddSerilog();
+                });
+        // .AddSerilog();
     }
 }
