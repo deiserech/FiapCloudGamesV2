@@ -2,7 +2,9 @@
 ○ Nome do grupo: Deises's Group 
 ○ Participantes e usernames no Discord: Deise Rech - deiserech_71664
 ○ Link da documentação: 
-    DDD: https://github.com/deiserech/FiapCloudGames/blob/main/fluxo_jogos_e_usuarios.pdf
-    README: https://github.com/deiserech/FiapCloudGames/blob/main/FiapCloudGames/README.md
-○ Link do(s) repositório(s): https://github.com/deiserech/FiapCloudGames/tree/main/FiapCloudGames
+        README: https://github.com/deiserech/FiapCloudGames/blob/main/FiapCloudGames/README.md
+                https://github.com/deiserech/FiapCloudGamesV2/blob/main/RUN_LOCAL_DOCKER.md
+        Pipeline CI/CD: https://github.com/deiserech/FiapCloudGamesV2/blob/main/pipeline/azure-pipelines.yml
+        Dockerfile: https://github.com/deiserech/FiapCloudGamesV2/blob/main/src/FiapCloudGames.Api/Dockerfile
+○ Link do(s) repositório(s): https://github.com/deiserech/FiapCloudGames/tree/main/FiapCloudGamesV2
 ○ Link do vídeo salvo no Youtube: https://youtu.be/odz1BOTbILU
