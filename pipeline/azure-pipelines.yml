@@ -72,8 +72,8 @@ stages:
                 repository: fiap-cloud-games-api
                 Dockerfile: src/FiapCloudGames.Api/Dockerfile
                 tags: |
-                  latest`
-                  $(Build.BuildId
+                  latest
+                  $(Build.BuildId)
                 buildContext: .
                 containerRegistry: 'fiapcloudgames-acr-connection'
                 buildArguments: --no-cache
