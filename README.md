@@ -34,20 +34,30 @@ O projeto está organizado em camadas:
 - **JWT (JSON Web Tokens)**: Autenticação e autorização
 - **Swagger/OpenAPI**: Documentação da API
 - **xUnit**: Framework de testes
+- **Docker**: Containerização da aplicação
+- **Azure DevOps Pipelines**: CI/CD automatizado
 
-## 🚀 Como Executar
+## 📋 Execução Local
 
-### 📋 Pré-requisitos
+Você pode rodar a aplicação localmente de duas formas:
+
+### 1. Ambiente Docker (recomendado para testes rápidos e padronização)
+
+Consulte o guia detalhado em [`RUN_LOCAL_DOCKER.md`](./RUN_LOCAL_DOCKER.md) para rodar a aplicação e o SQL Server via containers Docker.
+
+### 2. Ambiente de desenvolvimento tradicional
+
+#### 📋 Pré-requisitos
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads) ou [SQL Server Express](https://www.microsoft.com/sql-server/sql-server-downloads)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) ou [Visual Studio Code](https://code.visualstudio.com/)
 
-### ⚡ Instalação e Configuração
+#### ⚡ Instalação e Configuração
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/deiserech/FiapCloudGames.git
+   git clone https://RM366537@dev.azure.com/RM366537/FiapCloudGames/_git/FiapCloudGames
    cd FiapCloudGames
    ```
 
@@ -288,6 +298,58 @@ FiapCloudGames/
     └── coverage.ps1            # Script de cobertura de testes
 ```
 
+## 🔄 CI/CD e Pipeline Azure DevOps
+
+
+O projeto implementa CI/CD completo utilizando Azure Pipelines, com automação de build, testes, publicação de artefatos e deploy em containers Docker no Azure.
+
+### Estrutura da Pipeline
+
+- **Arquivo:** `pipeline/azure-pipelines.yml`
+- **Pool:** Utiliza agente dedicado `FiapCloudGames`.
+- **Variáveis:** `buildConfiguration` define o modo Release.
+
+#### Triggers
+- **CI:** Executa automaticamente em push para os branches `develop` e `main`.
+- **PR:** Executa em pull requests abertos para o branch `main`.
+
+#### Stages e Jobs
+- **Build:**
+  - Instala o SDK .NET 8.x.
+  - Restaura dependências (`dotnet restore`).
+  - Compila a solução (`dotnet build`).
+  - Publica binários de testes como artefato.
+- **Test:**
+  - Executa testes automatizados usando o artefato publicado.
+  - Gera relatório de cobertura com `XPlat Code Coverage`.
+- **Publish:**
+  - Só executa se os stages anteriores tiveram sucesso **e** o branch for `main` (`condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))`).
+  - Constrói imagem Docker da API.
+  - Faz push da imagem para o Azure Container Registry (ACR).
+  - Atualiza o App Service Plan para 2 instâncias via Azure CLI.
+
+#### Condições e Segurança
+- O deploy só ocorre em merges na branch `main` e se todos os testes passarem.
+- O uso de variáveis e tasks do Azure garante integração segura com recursos da nuvem.
+
+#### Resumo YAML
+```yaml
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+pr:
+  branches:
+    include:
+      - main
+stages:
+  - stage: Build
+  - stage: Test
+  - stage: Publish # Só executa em main e se tudo passar
+```
+
+Essa estrutura garante rastreabilidade, automação e qualidade contínua no ciclo de vida do software.
 
 ## 👥 Equipe
 
@@ -297,6 +359,6 @@ FiapCloudGames/
 ## 📞 Contato
 
 - **Email**: rech.deise@gmail.com
-- **GitHub**: [FiapCloudGames](https://github.com/deiserech/FiapCloudGames)
+- **GitHub**: [FiapCloudGames](https://dev.azure.com/RM366537/FiapCloudGames/_git/FiapCloudGames)
 
 ---
