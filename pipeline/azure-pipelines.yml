@@ -22,7 +22,6 @@ stages:
       - job: Build
         steps:
           - task: UseDotNet@2
-            displayName: "Install .NET SDK"
             inputs:
               packageType: "sdk"
               version: "8.x"
@@ -31,16 +30,16 @@ stages:
             displayName: "Restore NuGet packages"
 
           - task: DotNetCoreCLI@2
-            displayName: "Build Solution"
             inputs:
               azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
               command: 'build'
               projects: 'FiapCloudGames.sln'
               arguments: '--configuration $(buildConfiguration) --no-restore'
+            displayName: "Build Solution"
 
           - publish: $(Build.SourcesDirectory)/tests/FiapCloudGames.Tests/bin/Release/net8.0/
-            displayName: "Publish Binaries"
             artifact: fiap-cloud-games-binaries
+            displayName: "Publish Binaries"
 
   - stage: Test
     displayName: "Run Tests"
@@ -49,7 +48,6 @@ stages:
       - job: Test
         steps:
           - task: DotNetCoreCLI@2
-            displayName: "Run Unit Tests"
             inputs:
               azureSubscription: 'Azure for Students(a823f9d1-e0f4-4b84-b935-0e859c9f64b3)'
               command: 'test'
@@ -73,7 +71,6 @@ stages:
                 Dockerfile: src/FiapCloudGames.Api/Dockerfile
                 tags: |
                   latest
-                  $(Build.BuildId)
                 buildContext: .
                 containerRegistry: 'fiapcloudgames-acr-connection'
                 buildArguments: --no-cache
@@ -85,5 +82,4 @@ stages:
                 repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
                 tags: |
                   latest
-                  $(Build.BuildId)
                 containerRegistry: 'fiapcloudgames-acr-connection'

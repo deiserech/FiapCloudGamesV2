@@ -123,7 +123,6 @@ namespace FiapCloudGames.Api
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
 
-            // OpenTelemetry Tracing e Logs via OTLP para New Relic
             services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource
                             .AddService("FiapCloudGamesWebApp"))
@@ -141,7 +140,6 @@ namespace FiapCloudGames.Api
                 })
                 .WithLogging(builder =>
                 {
-                    // As propriedades IncludeScopes e ParseStateValues não existem em LoggerProviderBuilder
                     builder.AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri("https://otlp.nr-data.net:4317");

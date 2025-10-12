@@ -18,11 +18,11 @@ namespace FiapCloudGames.Api.Middlewares
             var activity = Activity.Current;
             if (activity != null)
             {
-                // Exemplo: adicionar informações globais ao trace
                 activity.SetTag("http.user_agent", context.Request.Headers["User-Agent"].ToString());
                 activity.SetTag("http.request_id", context.TraceIdentifier);
                 if (context.User.Identity?.IsAuthenticated == true)
                 {
+                    activity.SetTag("system.version", "v1");
                     activity.SetTag("user.id", context.User.Identity.Name);
                 }
             }
