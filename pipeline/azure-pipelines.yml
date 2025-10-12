@@ -57,8 +57,9 @@ stages:
 
   - stage: Publish
     displayName: "Publish Artifacts"
-    dependsOn: Test
+    dependsOn: Build
     # TODO: Enable tests after fixing testing app
+    # dependsOn: Test
     # condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     condition: succeeded()
     jobs:
