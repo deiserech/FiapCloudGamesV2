@@ -68,7 +68,7 @@ stages:
               displayName: 'Build Docker image'
               inputs:
                 command: build
-                repository: /fiap-cloud-games-api
+                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
                 Dockerfile: src/FiapCloudGames.Api/Dockerfile
                 tags: |
                   latest`
@@ -81,7 +81,7 @@ stages:
               displayName: 'Push Docker image to ACR'
               inputs:
                 command: push
-                repository: /fiap-cloud-games-api
+                repository: fiapcloudgamesacr.azurecr.io/fiap-cloud-games-api
                 tags: |
                   latest
                   $(Build.BuildId)
