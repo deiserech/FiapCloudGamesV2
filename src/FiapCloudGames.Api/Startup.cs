@@ -123,6 +123,9 @@ namespace FiapCloudGames.Api
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
 
+            // Serviço para logar uso de memória e CPU periodicamente
+            services.AddHostedService<ResourceLoggingService>();
+
             services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource
                             .AddService("FiapCloudGamesWebApp"))
