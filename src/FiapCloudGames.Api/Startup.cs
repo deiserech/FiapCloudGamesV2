@@ -14,6 +14,7 @@ using FiapCloudGames.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
 
 namespace FiapCloudGames.Api
 {
@@ -124,11 +125,13 @@ namespace FiapCloudGames.Api
 
             // OpenTelemetry Tracing e Logs via OTLP para New Relic
             services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource
+                            .AddService("FiapCloudGamesWebApp"))
                 .WithTracing(builder =>
                 {
                     builder
                         .AddAspNetCoreInstrumentation()
-                        .SetResourceBuilder(OpenTelemetry.Resources.ResourceBuilder.CreateDefault().AddService("FiapCloudGames.Api"))
+                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("FiapCloudGames.Api"))
                         .AddOtlpExporter(options =>
                         {
                             options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
@@ -145,6 +148,18 @@ namespace FiapCloudGames.Api
                         var newRelicKey = Environment.GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY");
                         options.Headers = $"api-key={newRelicKey}";
                     });
+                })
+                .WithMetrics(builder =>
+                {
+                    builder
+                        .AddAspNetCoreInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddOtlpExporter(options =>
+                        {
+                            options.Endpoint = new Uri("https://otlp.nr-data.net:4317");
+                            var newRelicKey = Environment.GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY");
+                            options.Headers = $"api-key={newRelicKey}";
+                        });
                 });
         }
 
