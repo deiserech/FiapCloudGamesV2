@@ -1,0 +1,8 @@
+
+○ Nome do grupo: Deises's Group 
+○ Participantes e usernames no Discord: Deise Rech - deiserech_71664
+○ Link da documentação: 
+    DDD: https://github.com/deiserech/FiapCloudGames/blob/main/fluxo_jogos_e_usuarios.pdf
+    README: https://github.com/deiserech/FiapCloudGames/blob/main/FiapCloudGames/README.md
+○ Link do(s) repositório(s): https://github.com/deiserech/FiapCloudGames/tree/main/FiapCloudGames
+○ Link do vídeo salvo no Youtube: https://youtu.be/odz1BOTbILU
