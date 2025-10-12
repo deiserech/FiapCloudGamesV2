@@ -55,9 +55,7 @@ public static class SerilogExtension
             if (environment == "local")
                 loggerConfiguration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}");
             else
-                loggerConfiguration.WriteTo.Console(new ExpressionTemplate(
-                    "{ \"timestamp\": \"@t\", \"message\": \"@m\", \"log.level\": \"@l\", \"service.name\": \"${dd_service}\", \"environment\": \"${dd_env}\", \"version\": \"${dd_version}\", \"exception\": \"@x\", \"properties\": @p }\n"
-                ));
+                loggerConfiguration.WriteTo.Console(new Serilog.Formatting.Json.JsonFormatter());
         });
 
         return host;
