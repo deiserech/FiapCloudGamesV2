@@ -15,6 +15,5 @@ namespace FiapCloudGames.Api
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-        // .AddSerilog();
     }
 }
