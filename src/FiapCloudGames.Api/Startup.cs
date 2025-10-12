@@ -29,7 +29,8 @@ namespace FiapCloudGames.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+                .AddSqlServer(Configuration.GetConnectionString("DefaultConnection") ?? "");
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
@@ -184,11 +185,11 @@ namespace FiapCloudGames.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-               app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapHealthChecks("/health");
-                });
+            app.UseEndpoints(endpoints =>
+             {
+                 endpoints.MapControllers();
+                 endpoints.MapHealthChecks("/health");
+             });
 
             app.UseMiddleware<TracingEnrichmentMiddleware>();
             app.UseMiddleware<ErrorHandlingMiddleware>();
