@@ -134,6 +134,7 @@ namespace FiapCloudGames.Api
                 .WithTracing(builder =>
                 {
                     builder
+                        .AddSource("FiapCloudGames.Application") 
                         .AddAspNetCoreInstrumentation()
                         .AddSqlClientInstrumentation() 
                         .AddOtlpExporter(ConfigureOtlpExporter);
