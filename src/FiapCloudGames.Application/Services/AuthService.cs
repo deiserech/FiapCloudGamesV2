@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FiapCloudGames.Application.Tracing;
+using FiapCloudGames.Application.Tracings;
 using FiapCloudGames.Domain.DTOs;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
@@ -27,7 +27,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<AuthResponseDto?> Login(LoginDto loginDto)
         {
-            using var activity = this.StartApiActivity($"{nameof(AuthService)}.Login");
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(AuthService)}.Login");
             _logger.LogInformation("Tentativa de login para o email: {Email}", loginDto.Email);
             var user = await _userRepository.GetByEmailAsync(loginDto.Email);
 
@@ -51,7 +51,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<AuthResponseDto?> Register(RegisterDto registerDto)
         {
-            using var activity = this.StartApiActivity($"{nameof(AuthService)}.Register");
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(AuthService)}.Register");
             _logger.LogInformation("Tentativa de registro para o email: {Email}", registerDto.Email);
             if (await _userRepository.EmailExistsAsync(registerDto.Email))
             {

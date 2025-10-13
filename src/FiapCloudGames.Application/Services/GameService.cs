@@ -1,4 +1,4 @@
-using FiapCloudGames.Application.Tracing;
+using FiapCloudGames.Application.Tracings;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
@@ -20,7 +20,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<IEnumerable<Game>> GetallAsync()
         {
-            using var activity = this.StartApiActivity($"{nameof(GameService)}.GetallAsync");
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.GetallAsync");
             _logger.LogInformation("Listando todos os jogos");
             return await _repo.GetAllAsync();
         }
@@ -28,14 +28,14 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<Game?> GetByIdAsync(int id)
         {
-            using var activity = this.StartApiActivity($"{nameof(GameService)}.GetByIdAsync");
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.GetByIdAsync");
             _logger.LogInformation("Buscando jogo por ID: {Id}", id);
             return await _repo.GetByIdAsync(id);
         }
 
         public async Task<Game> CreateAsync(Game game)
         {
-            using var activity = this.StartApiActivity($"{nameof(GameService)}.CreateAsync");
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.CreateAsync");
             _logger.LogInformation("Criando jogo: {Title}", game.Title);
             if (string.IsNullOrWhiteSpace(game.Title))
             {
