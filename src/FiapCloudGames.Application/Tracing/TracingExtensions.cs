@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace FiapCloudGames.Api.Tracing
+namespace FiapCloudGames.Application.Tracing
 {
     public static class TracingExtensions
     {

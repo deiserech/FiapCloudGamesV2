@@ -135,6 +135,7 @@ namespace FiapCloudGames.Api
                 {
                     builder
                         .AddAspNetCoreInstrumentation()
+                        .AddSqlClientInstrumentation() 
                         .AddOtlpExporter(ConfigureOtlpExporter);
                 })
                 .WithLogging(builder =>
