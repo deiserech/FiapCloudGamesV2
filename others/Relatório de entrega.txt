@@ -4,5 +4,5 @@
 - Link da documentação: https://github.com/deiserech/FiapCloudGames/blob/main/FiapCloudGames/README.md
 - Pipeline CI/CD: https://github.com/deiserech/FiapCloudGamesV2/blob/main/pipeline/azure-pipelines.yml
 - Dockerfile: https://github.com/deiserech/FiapCloudGamesV2/blob/main/src/FiapCloudGames.Api/Dockerfile
-- Link do(s) repositório(s): https://github.com/deiserech/FiapCloudGames/tree/main/FiapCloudGamesV2
-- Link do vídeo salvo no Youtube: 
+- Link do(s) repositório(s): https://github.com/deiserech/FiapCloudGamesV2
+- Link do vídeo salvo no Youtube: https://youtu.be/SQsFHj94nco
