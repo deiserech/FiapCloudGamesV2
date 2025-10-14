@@ -1,3 +1,4 @@
+using FiapCloudGames.Application.Tracings;
 using FiapCloudGames.Domain.DTOs;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
@@ -20,12 +21,14 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<User?> GetByIdAsync(int id)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.GetByIdAsync");
             _logger.LogInformation("Buscando usuário por ID: {Id}", id);
             return await _repo.GetByIdAsync(id);
         }
 
         public async Task<User> CreateUserAsync(RegisterDto registerDto)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.CreateUserAsync");
             _logger.LogInformation("Criando usuário: {Email}", registerDto.Email);
             var user = new User
             {

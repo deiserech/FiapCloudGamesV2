@@ -1,3 +1,4 @@
+using FiapCloudGames.Application.Tracings;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
@@ -30,6 +31,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<IEnumerable<Library>> GetUserLibraryAsync(int userId)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(LibraryService)}.GetUserLibraryAsync");
             _logger.LogInformation("Buscando biblioteca do usuário: {UserId}", userId);
             if (!await _userRepository.ExistsAsync(userId))
             {
@@ -43,12 +45,14 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<Library?> GetLibraryEntryAsync(int id)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(LibraryService)}.GetLibraryEntryAsync");
             _logger.LogInformation("Buscando entrada da biblioteca: {Id}", id);
             return await _libraryRepository.GetByIdAsync(id);
         }
 
         public async Task<Library> PurchaseGameAsync(int userId, int gameId)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(LibraryService)}.PurchaseGameAsync");
             _logger.LogInformation("Usuário {UserId} está tentando comprar o jogo {GameId}", userId, gameId);
             if (!await _userRepository.ExistsAsync(userId))
             {

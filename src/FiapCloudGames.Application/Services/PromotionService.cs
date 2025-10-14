@@ -1,3 +1,4 @@
+using FiapCloudGames.Application.Tracings;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using FiapCloudGames.Domain.Interfaces.Services;
@@ -24,6 +25,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<Promotion?> GetPromotionByIdAsync(int id)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.GetPromotionByIdAsync");
             _logger.LogInformation("Buscando promoção por ID: {Id}", id);
             return await _promotionRepository.GetByIdAsync(id);
         }
@@ -31,6 +33,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<IEnumerable<Promotion>> GetActivePromotionsAsync()
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.GetActivePromotionsAsync");
             _logger.LogInformation("Buscando promoções ativas");
             return await _promotionRepository.GetActivePromotionsAsync();
         }
@@ -38,12 +41,14 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<IEnumerable<Promotion>> GetActivePromotionsByGameIdAsync(int gameId)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.GetActivePromotionsByGameIdAsync");
             _logger.LogInformation("Buscando promoções ativas para o jogo {GameId}", gameId);
             return await _promotionRepository.GetActivePromotionsByGameIdAsync(gameId);
         }
 
         public async Task<Promotion> CreatePromotionAsync(Promotion promotion)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.CreatePromotionAsync");
             _logger.LogInformation("Criando promoção para o jogo {GameId}", promotion.GameId);
             if (promotion.StartDate >= promotion.EndDate)
             {
@@ -72,6 +77,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<Promotion> UpdatePromotionAsync(Promotion promotion)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.UpdatePromotionAsync");
             var existing = await _promotionRepository.GetByIdAsync(promotion.Id);
             if (existing == null)
             {
@@ -108,6 +114,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task DeletePromotionAsync(int id)
         {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(PromotionService)}.DeletePromotionAsync");
             var promotion = await _promotionRepository.GetByIdAsync(id);
             if (promotion == null)
             {
