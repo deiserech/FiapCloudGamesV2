@@ -12,9 +12,9 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Shared\FiapCloudGames.Shared.csproj" />
 		<ProjectReference Include="..\FiapCloudGames.Application\FiapCloudGames.Application.csproj" />
 		<ProjectReference Include="..\FiapCloudGames.Infrastructure\FiapCloudGames.Infrastructure.csproj" />
+		<ProjectReference Include="..\FiapCloudGames.Shared\FiapCloudGames.Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

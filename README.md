@@ -14,16 +14,16 @@ O **FIAP Cloud Games** é uma plataforma de jogos digitais desenvolvida como par
 
 ## 🏗️ Arquitetura
 
-O projeto está organizado em camadas:
+O repositório adota uma arquitetura em camadas organizada como múltiplos projetos dentro da solução `FiapCloudGames.sln`, com responsabilidades bem definidas e dependências direcionadas (camadas superiores dependem das inferiores por meio de interfaces):
 
-```
-📁 FiapCloudGames/
-├── 🌐 FiapCloudGames.Api/          # Camada de apresentação (Controllers, Middlewares)
-├── ⚙️ FiapCloudGames.Application/   # Camada de aplicação (Services, Use Cases)
-├── 🏛️ FiapCloudGames.Domain/        # Camada de domínio (Entities, DTOs, Interfaces)
-├── 🔧 FiapCloudGames.Infrastructure/ # Camada de infraestrutura (Repositories, Data)
-└── 🧪 FiapCloudGames.Tests/        # Testes unitários e de integração
-```
+- **FiapCloudGames.Api** — Camada de apresentação e fachada da API (Controllers, Middlewares, Program/Startup, configuração e DTOs de requisição).
+- **FiapCloudGames.Application** — Orquestração de casos de uso, serviços de aplicação, validações e DTOs de transferência.
+- **FiapCloudGames.Domain** — Regras de negócio, entidades, enums, interfaces de domínio e contratos.
+- **FiapCloudGames.Infrastructure** — Implementações de repositório, contexto do Entity Framework Core, migrações e integrações com banco e infra externa.
+- **FiapCloudGames.Shared** — Componentes e utilitários compartilhados entre projetos (tracing, logging, helpers).
+- **FiapCloudGames.Tests** — Testes unitários e de integração, separados por projeto/área quando aplicável.
+
+Essa organização favorece testabilidade, separação de responsabilidades e deploy em containers. As dependências seguem o fluxo: `Api -> Application -> Domain`, enquanto `Infrastructure` e `Shared` fornecem implementações e utilitários consumidos pelas demais camadas.
 
 ### 🛠️ Tecnologias Utilizadas
 
@@ -274,29 +274,39 @@ O relatório será gerado em `tests/coverage-report/index.html`
 
 ```
 FiapCloudGames/
+├── FiapCloudGames.sln                # Solução .NET
+├── README.md
+├── RUN_LOCAL_DOCKER.md
+├── pipeline/                         # CI/CD (Azure Pipelines)
+├── others/                           # Scripts e arquivos auxiliares
 ├── src/
-│   ├── FiapCloudGames.Api/
-│   │   ├── Controllers/         # Controladores da API
-│   │   ├── Middlewares/         # Middlewares customizados
-│   │   ├── Properties/          # Configurações de launch
-│   │   └── Request/             # DTOs de requisição
-│   ├── FiapCloudGames.Application/
-│   │   └── Services/            # Serviços de aplicação
-│   ├── FiapCloudGames.Domain/
-│   │   ├── DTOs/                # Data Transfer Objects
-│   │   ├── Entities/            # Entidades do domínio
-│   │   ├── Enums/               # Enumerações
-│   │   ├── Interfaces/          # Contratos e interfaces
-│   │   └── Utils/               # Utilitários do domínio
-│   └── FiapCloudGames.Infrastructure/
-│       ├── Data/                # Contexto do Entity Framework
-│       ├── Migrations/          # Migrações do banco
-│       └── Repositories/        # Implementações dos repositórios
+│   ├── FiapCloudGames.Api/           # API (Controllers, Middlewares, Program/Startup, appsettings)
+│   │   ├── Controllers/
+│   │   ├── Middlewares/
+│   │   ├── Request/
+│   ├── FiapCloudGames.Application/   # Serviços de aplicação, DTOs, interfaces de orquestração
+│   │   ├── DTOs/
+│   │   ├── Services/
+│   │   └── Interfaces/
+│   ├── FiapCloudGames.Domain/        # Entidades, enums, interfaces de domínio
+│   │   ├── Entities/
+│   │   ├── Enums/
+│   │   └── Interfaces/
+│   └── FiapCloudGames.Infrastructure/ # Persistência, EF Core DbContext, Migrations, Repositories
+│       ├── Data/
+│       ├── Migrations/
+│       └── Repositories/
 ├── tests/
-│   └── FiapCloudGames.Tests/    # Testes unitários
-└── others/
-    └── coverage.ps1            # Script de cobertura de testes
+│   └── FiapCloudGames.Tests/         # Testes unitários e de integração
 ```
+
+Breve descrição dos papéis principais:
+
+- **`FiapCloudGames.Api`**: expõe os endpoints REST, configura middlewares (erro, autenticação, tracing) e converte solicitações para DTOs da camada de aplicação.
+- **`FiapCloudGames.Application`**: implementa os casos de uso, validações e coordena chamadas ao `Domain` e `Infrastructure`.
+- **`FiapCloudGames.Domain`**: contém entidades e regras de negócio puras (sem dependências de infra).
+- **`FiapCloudGames.Infrastructure`**: integra com banco de dados via EF Core, implementa repositórios e migrações.
+- **`FiapCloudGames.Shared`**: utilitários e funcionalidades cross-cutting (ex.: tracing e logging) reutilizáveis entre projetos.
 
 ## 🔄 CI/CD e Pipeline Azure DevOps
 
