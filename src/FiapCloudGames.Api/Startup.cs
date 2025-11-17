@@ -122,8 +122,8 @@ namespace FiapCloudGames.Api
             services.AddScoped<ILibraryService, LibraryService>();
             services.AddScoped<IPromotionRepository, PromotionRepository>();
             services.AddScoped<IPromotionService, PromotionService>();
-            services.AddScoped<Domain.Interfaces.Repositories.IUserRepository, UserRepository>();
-            services.AddScoped<Application.Interfaces.Services.IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddHostedService<ResourceLoggingService>();
 
