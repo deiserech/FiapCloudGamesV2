@@ -1,6 +1,6 @@
-using FiapCloudGames.Domain.DTOs;
+using FiapCloudGames.Application.DTOs;
 
-namespace FiapCloudGames.Domain.Interfaces.Services
+namespace FiapCloudGames.Application.Interfaces.Services
 {
     public interface IAuthService
     {

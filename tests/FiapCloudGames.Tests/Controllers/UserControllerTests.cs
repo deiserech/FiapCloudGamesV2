@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using FiapCloudGames.Api.Controllers;
-using FiapCloudGames.Domain.DTOs;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Enums;
-using FiapCloudGames.Domain.Interfaces.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

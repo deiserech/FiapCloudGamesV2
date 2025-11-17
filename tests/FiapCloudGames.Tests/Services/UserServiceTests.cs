@@ -5,21 +5,21 @@ using FiapCloudGames.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Microsoft.Extensions.Logging; // Adicionado para ILogger
+using Microsoft.Extensions.Logging; 
 
 namespace FiapCloudGames.Tests.Services
 {
     public class UserServiceTests
     {
         private readonly Mock<IUserRepository> _mockUserRepository;
-        private readonly Mock<ILogger<UserService>> _mockLogger; // Adicionado
+        private readonly Mock<ILogger<UserService>> _mockLogger; 
         private readonly UserService _userService;
 
         public UserServiceTests()
         {
             _mockUserRepository = new Mock<IUserRepository>();
-            _mockLogger = new Mock<ILogger<UserService>>(); // Adicionado
-            _userService = new UserService(_mockUserRepository.Object, _mockLogger.Object); // Corrigido
+            _mockLogger = new Mock<ILogger<UserService>>(); 
+            _userService = new UserService(_mockUserRepository.Object, _mockLogger.Object); 
         }
 
         #region ObterPorId Tests

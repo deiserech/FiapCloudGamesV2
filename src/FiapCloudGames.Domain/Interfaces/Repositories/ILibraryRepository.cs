@@ -7,6 +7,6 @@ namespace FiapCloudGames.Domain.Interfaces.Repositories
         Task<Library?> GetByIdAsync(int id);
         Task<IEnumerable<Library>> GetByUserIdAsync(int userId);
         Task<Library> CreateAsync(Library library);
-        Task<bool> UserOwnsGameAsync(int userId, int gameId);
+        Task<bool> ExistsAsync(int userId, int gameId);
     }
 }

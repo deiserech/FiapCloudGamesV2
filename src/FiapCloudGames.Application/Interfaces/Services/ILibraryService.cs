@@ -1,6 +1,6 @@
 using FiapCloudGames.Domain.Entities;
 
-namespace FiapCloudGames.Domain.Interfaces.Services
+namespace FiapCloudGames.Application.Interfaces.Services
 {
     public interface ILibraryService
     {

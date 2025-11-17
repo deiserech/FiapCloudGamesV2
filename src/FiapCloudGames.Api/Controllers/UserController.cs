@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using FiapCloudGames.Domain.DTOs;
-using FiapCloudGames.Domain.Interfaces.Services;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,7 +69,7 @@ namespace FiapCloudGames.Api.Controllers
 
             var user = await _service.GetByIdAsync(int.Parse(userId));
             if (user == null) return NotFound();
-            
+
             return Ok(new
             {
                 Id = user.Id,

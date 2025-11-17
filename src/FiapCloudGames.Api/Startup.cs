@@ -1,21 +1,20 @@
 using System.Security.Claims;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Logs;
 using System.Text;
 using System.Text.Json.Serialization;
 using FiapCloudGames.Api.Middlewares;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Application.Services;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
-using FiapCloudGames.Infrastructure;
 using FiapCloudGames.Infrastructure.Data;
 using FiapCloudGames.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Exporter;   
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace FiapCloudGames.Api
 {
@@ -123,8 +122,8 @@ namespace FiapCloudGames.Api
             services.AddScoped<ILibraryService, LibraryService>();
             services.AddScoped<IPromotionRepository, PromotionRepository>();
             services.AddScoped<IPromotionService, PromotionService>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<Domain.Interfaces.Repositories.IUserRepository, UserRepository>();
+            services.AddScoped<Application.Interfaces.Services.IUserService, UserService>();
 
             services.AddHostedService<ResourceLoggingService>();
 
@@ -134,9 +133,9 @@ namespace FiapCloudGames.Api
                 .WithTracing(builder =>
                 {
                     builder
-                        .AddSource("FiapCloudGames.Application") 
+                        .AddSource("FiapCloudGames.Application")
                         .AddAspNetCoreInstrumentation()
-                        .AddSqlClientInstrumentation() 
+                        .AddSqlClientInstrumentation()
                         .AddOtlpExporter(ConfigureOtlpExporter);
                 })
                 .WithLogging(builder =>

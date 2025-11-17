@@ -1,7 +1,7 @@
-using FiapCloudGames.Application.Tracings;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Application.Services
@@ -17,41 +17,45 @@ namespace FiapCloudGames.Application.Services
             _logger = logger;
         }
 
-
-        public async Task<IEnumerable<Game>> GetallAsync()
+        public async Task<IEnumerable<GameDto>> GetAllAsync()
         {
-            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.GetallAsync");
-            _logger.LogInformation("Listando todos os jogos");
-            return await _repo.GetAllAsync();
+            var games = await _repo.GetAllAsync();
+            return games.Select(MapToDto);
         }
 
-
-        public async Task<Game?> GetByIdAsync(int id)
+        public async Task<GameDto?> GetByIdAsync(int id)
         {
-            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.GetByIdAsync");
-            _logger.LogInformation("Buscando jogo por ID: {Id}", id);
-            return await _repo.GetByIdAsync(id);
+            var game = await _repo.GetByIdAsync(id);
+            return game == null ? null : MapToDto(game);
         }
 
-        public async Task<Game> CreateAsync(Game game)
+        public async Task<GameDto> CreateAsync(GameDto gameDto)
         {
-            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(GameService)}.CreateAsync");
-            _logger.LogInformation("Criando jogo: {Title}", game.Title);
-            if (string.IsNullOrWhiteSpace(game.Title))
-            {
-                _logger.LogWarning("Tentativa de criar jogo sem título");
+            if (string.IsNullOrWhiteSpace(gameDto.Title))
                 throw new ArgumentException("O título do jogo é obrigatório.");
-            }
 
-            if (game.Price <= 0)
-            {
-                _logger.LogWarning("Tentativa de criar jogo com preço inválido: {Price}", game.Price);
+            if (gameDto.Price <= 0)
                 throw new ArgumentException("O preço do jogo deve ser maior que zero.");
-            }
 
+            var game = MapToEntity(gameDto);
             var created = await _repo.CreateAsync(game);
-            _logger.LogInformation("Jogo criado com sucesso: {Title}", game.Title);
-            return created;
+            return MapToDto(created);
         }
+
+        private static GameDto MapToDto(Game game) => new GameDto
+        {
+            Id = game.Id,
+            Title = game.Title,
+            Description = game.Description,
+            Price = game.Price
+        };
+
+        private static Game MapToEntity(GameDto dto) => new Game
+        {
+            Id = dto.Id,
+            Title = dto.Title,
+            Description = dto.Description,
+            Price = dto.Price
+        };
     }
 }

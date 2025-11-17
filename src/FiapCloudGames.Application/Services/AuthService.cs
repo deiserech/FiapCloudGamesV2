@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FiapCloudGames.Application.Tracings;
-using FiapCloudGames.Domain.DTOs;
-using FiapCloudGames.Domain.Entities;
+using FiapCloudGames.Application.DTOs;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
+using FiapCloudGames.Application.Interfaces.Services;
+using FiapCloudGames.Domain.Entities;
+using FiapCloudGames.Shared.Tracing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +14,11 @@ namespace FiapCloudGames.Application.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly Domain.Interfaces.Repositories.IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
+        public AuthService(Domain.Interfaces.Repositories.IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -103,7 +103,7 @@ namespace FiapCloudGames.Application.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role.ToString()), 
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

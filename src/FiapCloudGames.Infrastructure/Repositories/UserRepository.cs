@@ -4,7 +4,7 @@ using FiapCloudGames.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure
+namespace FiapCloudGames.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {

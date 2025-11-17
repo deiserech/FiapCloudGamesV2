@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using FiapCloudGames.Application.Services;
-using FiapCloudGames.Domain.DTOs;
+using FiapCloudGames.Application.DTOs;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Enums;
 using FiapCloudGames.Domain.Interfaces.Repositories;
@@ -16,21 +16,21 @@ namespace FiapCloudGames.Tests.Services
     {
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IConfiguration> _mockConfiguration;
-        private readonly Mock<ILogger<AuthService>> _mockLogger; // Adicionado
+        private readonly Mock<ILogger<AuthService>> _mockLogger; 
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockConfiguration = new Mock<IConfiguration>();
-            _mockLogger = new Mock<ILogger<AuthService>>(); // Adicionado
+            _mockLogger = new Mock<ILogger<AuthService>>(); 
 
             SetupJwtConfiguration();
 
             _authService = new AuthService(
                 _mockUserRepository.Object,
                 _mockConfiguration.Object,
-                _mockLogger.Object // Adicionado
+                _mockLogger.Object 
             );
         }
 

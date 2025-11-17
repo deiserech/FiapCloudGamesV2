@@ -1,4 +1,4 @@
-namespace FiapCloudGames.Domain.DTOs
+namespace FiapCloudGames.Application.DTOs
 {
     using System.ComponentModel.DataAnnotations;
 

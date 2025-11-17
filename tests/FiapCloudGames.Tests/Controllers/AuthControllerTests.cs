@@ -1,7 +1,7 @@
 using FiapCloudGames.Api.Controllers;
-using FiapCloudGames.Domain.DTOs;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Enums;
-using FiapCloudGames.Domain.Interfaces.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -73,7 +73,7 @@ namespace FiapCloudGames.Tests.Controllers
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var unauthorizedResult = result as UnauthorizedObjectResult;
             unauthorizedResult.Should().NotBeNull();
-            unauthorizedResult!.Value.Should().BeEquivalentTo(new { message = "Email ou senha inválidos" });
+            unauthorizedResult!.Value.Should().BeEquivalentTo(new { message = "Email ou senha invÃ¡lidos" });
             _mockAuthService.Verify(s => s.Login(loginDto), Times.Once);
         }
 
@@ -158,7 +158,7 @@ namespace FiapCloudGames.Tests.Controllers
             result.Should().BeOfType<BadRequestObjectResult>();
             var badRequestResult = result as BadRequestObjectResult;
             badRequestResult.Should().NotBeNull();
-            badRequestResult!.Value.Should().BeEquivalentTo(new { message = "Email já está em uso" });
+            badRequestResult!.Value.Should().BeEquivalentTo(new { message = "Email jÃ¡ estÃ¡ em uso" });
             _mockAuthService.Verify(s => s.Register(registerDto), Times.Once);
         }
 
@@ -186,7 +186,7 @@ namespace FiapCloudGames.Tests.Controllers
 
             errors.Should().ContainKey("RegisterDto");
             var registerDtoErrors = errors!["RegisterDto"] as string[];
-            registerDtoErrors.Should().Contain("O email fornecido não é válido.");
+            registerDtoErrors.Should().Contain("O email fornecido nÃ£o Ã© vÃ¡lido.");
 
             _mockAuthService.Verify(s => s.Register(It.IsAny<RegisterDto>()), Times.Never);
         }

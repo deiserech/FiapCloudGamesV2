@@ -1,36 +1,36 @@
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Application.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-using Microsoft.Extensions.Logging; // Adicionado para ILogger
-
 namespace FiapCloudGames.Tests.Services
 {
     public class LibraryServiceTests
     {
         private readonly Mock<ILibraryRepository> _mockLibraryRepo;
-        private readonly Mock<IUserRepository> _mockUserRepo;
-        private readonly Mock<IGameRepository> _mockGameRepo;
+        private readonly Mock<IUserService> _mockUserService;
+        private readonly Mock<IGameService> _mockGameService;
         private readonly Mock<IPromotionService> _mockPromotionService;
-        private readonly Mock<ILogger<LibraryService>> _mockLogger; // Adicionado
+        private readonly Mock<ILogger<LibraryService>> _mockLogger;
         private readonly LibraryService _libraryService;
 
         public LibraryServiceTests()
         {
             _mockLibraryRepo = new Mock<ILibraryRepository>();
-            _mockUserRepo = new Mock<IUserRepository>();
-            _mockGameRepo = new Mock<IGameRepository>();
+            _mockUserService = new Mock<IUserService>();
+            _mockGameService = new Mock<IGameService>();
             _mockPromotionService = new Mock<IPromotionService>();
-            _mockLogger = new Mock<ILogger<LibraryService>>(); // Adicionado
+            _mockLogger = new Mock<ILogger<LibraryService>>();
             _libraryService = new LibraryService(
                 _mockLibraryRepo.Object,
-                _mockUserRepo.Object,
-                _mockGameRepo.Object,
+                _mockUserService.Object,
+                _mockGameService.Object,
                 _mockPromotionService.Object,
-                _mockLogger.Object // Adicionado
+                _mockLogger.Object
             );
         }
 
@@ -45,7 +45,7 @@ namespace FiapCloudGames.Tests.Services
                     new Library { Id = 2, UserId = userId, GameId = 20 }
                 };
 
-            _mockUserRepo.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(true);
+            _mockUserService.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(true);
             _mockLibraryRepo.Setup(r => r.GetByUserIdAsync(userId)).ReturnsAsync(expectedLibraries);
 
             // Act
@@ -53,7 +53,7 @@ namespace FiapCloudGames.Tests.Services
 
             // Assert
             result.Should().BeEquivalentTo(expectedLibraries);
-            _mockUserRepo.Verify(r => r.ExistsAsync(userId), Times.Once);
+            _mockUserService.Verify(r => r.ExistsAsync(userId), Times.Once);
             _mockLibraryRepo.Verify(r => r.GetByUserIdAsync(userId), Times.Once);
         }
 
@@ -82,12 +82,12 @@ namespace FiapCloudGames.Tests.Services
             int gameId = 10;
             decimal gamePrice = 99.99m;
             decimal discountedPrice = 79.99m;
-            var game = new Game { Id = gameId, Price = gamePrice };
+            var game = new GameDto { Id = gameId, Price = gamePrice };
             var createdLibrary = new Library { Id = 1, UserId = userId, GameId = gameId };
 
-            _mockUserRepo.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(true);
-            _mockGameRepo.Setup(r => r.GetByIdAsync(gameId)).ReturnsAsync(game);
-            _mockLibraryRepo.Setup(r => r.UserOwnsGameAsync(userId, gameId)).ReturnsAsync(false);
+            _mockUserService.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(true);
+            _mockGameService.Setup(r => r.GetByIdAsync(gameId)).ReturnsAsync(game);
+            _mockLibraryRepo.Setup(r => r.ExistsAsync(userId, gameId)).ReturnsAsync(false);
             _mockPromotionService.Setup(s => s.GetDiscountedPriceAsync(gameId)).ReturnsAsync(discountedPrice);
             _mockLibraryRepo.Setup(r => r.CreateAsync(It.IsAny<Library>())).ReturnsAsync(createdLibrary);
 
@@ -96,9 +96,9 @@ namespace FiapCloudGames.Tests.Services
 
             // Assert
             result.Should().Be(createdLibrary);
-            _mockUserRepo.Verify(r => r.ExistsAsync(userId), Times.Once);
-            _mockGameRepo.Verify(r => r.GetByIdAsync(gameId), Times.Once);
-            _mockLibraryRepo.Verify(r => r.UserOwnsGameAsync(userId, gameId), Times.Once);
+            _mockUserService.Verify(r => r.ExistsAsync(userId), Times.Once);
+            _mockGameService.Verify(r => r.GetByIdAsync(gameId), Times.Once);
+            _mockLibraryRepo.Verify(r => r.ExistsAsync(userId, gameId), Times.Once);
             _mockPromotionService.Verify(s => s.GetDiscountedPriceAsync(gameId), Times.Once);
             _mockLibraryRepo.Verify(r => r.CreateAsync(It.IsAny<Library>()), Times.Once);
         }

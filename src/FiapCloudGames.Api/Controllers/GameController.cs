@@ -1,5 +1,6 @@
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,7 +39,7 @@ namespace FiapCloudGames.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> CreateGame([FromBody] Game game)
+        public async Task<IActionResult> CreateGame([FromBody] GameDto game)
         {
             if (game == null)
                 return BadRequest("Game data is required");
@@ -75,10 +76,10 @@ namespace FiapCloudGames.Api.Controllers
         /// <response code="200">Lista de jogos retornada com sucesso</response>
         [HttpGet]
         [Authorize(Roles = "Admin, User")]
-        [ProducesResponseType(typeof(IEnumerable<Game>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<GameDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetGames()
         {
-            return Ok(await _service.GetallAsync());
+            return Ok(await _service.GetAllAsync());
         }
     }
 }

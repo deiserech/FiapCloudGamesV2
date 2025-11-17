@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace FiapCloudGames.Application.Tracings
+namespace FiapCloudGames.Shared.Tracing
 {
     public static class Tracing
     {

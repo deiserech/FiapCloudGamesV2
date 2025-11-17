@@ -1,5 +1,5 @@
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -113,7 +113,7 @@ namespace FiapCloudGames.Api.Controllers
             try
             {
                 var discountedPrice = await _promotionService.GetDiscountedPriceAsync(gameId);
-                return Ok(new {DiscountedPrice = discountedPrice });
+                return Ok(new { DiscountedPrice = discountedPrice });
             }
             catch (Exception ex)
             {

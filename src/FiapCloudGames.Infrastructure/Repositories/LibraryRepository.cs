@@ -4,7 +4,7 @@ using FiapCloudGames.Infrastructure.Data;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure
+namespace FiapCloudGames.Infrastructure.Repositories
 {
     public class LibraryRepository : ILibraryRepository
     {
@@ -43,7 +43,7 @@ namespace FiapCloudGames.Infrastructure
             await _context.SaveChangesAsync();
             return await GetByIdAsync(library.Id) ?? library;
         }
-        public async Task<bool> UserOwnsGameAsync(int userId, int gameId)
+        public async Task<bool> ExistsAsync(int userId, int gameId)
         {
             return await _context.Libraries
                 .AnyAsync(l => l.UserId == userId && l.GameId == gameId);

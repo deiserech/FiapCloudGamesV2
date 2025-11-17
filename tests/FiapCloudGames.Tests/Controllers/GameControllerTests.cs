@@ -1,6 +1,8 @@
 using FiapCloudGames.Api.Controllers;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -25,7 +27,7 @@ namespace FiapCloudGames.Tests.Controllers
         public async Task Cadastrar_WithValidGame_ShouldReturnCreatedAtAction()
         {
             // Arrange
-            var game = new Game
+            var game = new GameDto
             {
                 Id = 1,
                 Title = "Test Game",
@@ -33,7 +35,7 @@ namespace FiapCloudGames.Tests.Controllers
                 Price = 59.99m,
             };
 
-            _mockGameService.Setup(s => s.CreateAsync(It.IsAny<Game>())).Verifiable();
+            _mockGameService.Setup(s => s.CreateAsync(It.IsAny<GameDto>())).Verifiable();
 
             // Act
             var result = await _gameController.CreateGame(game);
@@ -52,8 +54,8 @@ namespace FiapCloudGames.Tests.Controllers
         public async Task Cadastrar_WithInvalidModelState_ShouldReturnBadRequest()
         {
             // Arrange
-            var game = new Game();
-             _gameController.ModelState.AddModelError("Title", "Title is required");
+            var game = new GameDto();
+            _gameController.ModelState.AddModelError("Title", "Title is required");
 
             // Act
             var result = await _gameController.CreateGame(game);
@@ -63,7 +65,7 @@ namespace FiapCloudGames.Tests.Controllers
             var badRequestResult = result as BadRequestObjectResult;
             badRequestResult.Should().NotBeNull();
             badRequestResult!.Value.Should().BeOfType<SerializableError>();
-            _mockGameService.Verify(s => s.CreateAsync(It.IsAny<Game>()), Times.Never);
+            _mockGameService.Verify(s => s.CreateAsync(It.IsAny<GameDto>()), Times.Never);
         }
 
         #endregion
@@ -75,7 +77,7 @@ namespace FiapCloudGames.Tests.Controllers
         {
             // Arrange
             var gameId = 1;
-            var expectedGame = new Game
+            var expectedGame = new GameDto
             {
                 Id = gameId,
                 Title = "Test Game",
@@ -101,7 +103,7 @@ namespace FiapCloudGames.Tests.Controllers
         {
             // Arrange
             var gameId = 999;
-            _mockGameService.Setup(s => s.GetByIdAsync(gameId)).ReturnsAsync((Game?)null);
+            _mockGameService.Setup(s => s.GetByIdAsync(gameId)).ReturnsAsync((GameDto?)null);
 
             // Act
             var result = await _gameController.GetGameById(gameId);
@@ -119,14 +121,14 @@ namespace FiapCloudGames.Tests.Controllers
         public async Task ListarTodos_WithGamesInDatabase_ShouldReturnOkWithGamesList()
         {
             // Arrange
-            var expectedGames = new List<Game>
+            var expectedGames = new List<GameDto>
             {
-                new Game { Id = 1, Title = "Game 1", Description = "Description 1", Price = 29.99m },
-                new Game { Id = 2, Title = "Game 2", Description = "Description 2", Price = 39.99m },
-                new Game { Id = 3, Title = "Game 3", Description = "Description 3", Price = 49.99m }
+                new GameDto { Id = 1, Title = "Game 1", Description = "Description 1", Price = 29.99m },
+                new GameDto { Id = 2, Title = "Game 2", Description = "Description 2", Price = 39.99m },
+                new GameDto { Id = 3, Title = "Game 3", Description = "Description 3", Price = 49.99m }
             };
 
-            _mockGameService.Setup(s => s.GetallAsync()).ReturnsAsync(expectedGames);
+            _mockGameService.Setup(s => s.GetAllAsync()).ReturnsAsync(expectedGames);
 
             // Act
             var result = await _gameController.GetGames();
@@ -136,15 +138,15 @@ namespace FiapCloudGames.Tests.Controllers
             var okResult = result as OkObjectResult;
             okResult.Should().NotBeNull();
             okResult!.Value.Should().BeEquivalentTo(expectedGames);
-            _mockGameService.Verify(s => s.GetallAsync(), Times.Once);
+            _mockGameService.Verify(s => s.GetAllAsync(), Times.Once);
         }
 
         [Fact]
         public async Task ListarTodos_WithEmptyDatabase_ShouldReturnOkWithEmptyList()
         {
             // Arrange
-            var emptyGamesList = new List<Game>();
-            _mockGameService.Setup(s => s.GetallAsync()).ReturnsAsync(emptyGamesList);
+            var emptyGamesList = new List<GameDto>();
+            _mockGameService.Setup(s => s.GetAllAsync()).ReturnsAsync(emptyGamesList);
 
             // Act
             var result = await _gameController.GetGames();
@@ -154,19 +156,19 @@ namespace FiapCloudGames.Tests.Controllers
             var okResult = result as OkObjectResult;
             okResult.Should().NotBeNull();
             okResult!.Value.Should().BeEquivalentTo(emptyGamesList);
-            _mockGameService.Verify(s => s.GetallAsync(), Times.Once);
+            _mockGameService.Verify(s => s.GetAllAsync(), Times.Once);
         }
 
         [Fact]
         public async Task ListarTodos_WithSingleGame_ShouldReturnOkWithSingleGameList()
         {
             // Arrange
-            var singleGame = new List<Game>
+            var singleGame = new List<GameDto>
             {
-                new Game { Id = 1, Title = "Only Game", Description = "The only game", Price = 99.99m}
+                new GameDto { Id = 1, Title = "Only Game", Description = "The only game", Price = 99.99m}
             };
 
-            _mockGameService.Setup(s => s.GetallAsync()).ReturnsAsync(singleGame);
+            _mockGameService.Setup(s => s.GetAllAsync()).ReturnsAsync(singleGame);
 
             // Act
             var result = await _gameController.GetGames();
@@ -176,9 +178,9 @@ namespace FiapCloudGames.Tests.Controllers
             var okResult = result as OkObjectResult;
             okResult.Should().NotBeNull();
             okResult!.Value.Should().BeEquivalentTo(singleGame);
-            var returnedGames = okResult.Value as IEnumerable<Game>;
+            var returnedGames = okResult.Value as IEnumerable<GameDto>;
             returnedGames.Should().HaveCount(1);
-            _mockGameService.Verify(s => s.GetallAsync(), Times.Once);
+            _mockGameService.Verify(s => s.GetAllAsync(), Times.Once);
         }
 
         #endregion

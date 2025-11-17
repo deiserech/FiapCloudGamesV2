@@ -1,29 +1,35 @@
-using FiapCloudGames.Application.Tracings;
-using FiapCloudGames.Domain.DTOs;
+using FiapCloudGames.Shared.Tracing;
+using FiapCloudGames.Application.DTOs;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
+using FiapCloudGames.Application.Interfaces.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Application.Services
 {
-    public class UserService : IUserService
+    public class UserService : Interfaces.Services.IUserService
     {
-        private readonly IUserRepository _repo;
+        private readonly Domain.Interfaces.Repositories.IUserRepository _repo;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepository repo, ILogger<UserService> logger)
+        public UserService(Domain.Interfaces.Repositories.IUserRepository repo, ILogger<UserService> logger)
         {
             _repo = repo;
             _logger = logger;
         }
-
 
         public async Task<User?> GetByIdAsync(int id)
         {
             using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.GetByIdAsync");
             _logger.LogInformation("Buscando usuário por ID: {Id}", id);
             return await _repo.GetByIdAsync(id);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.ExistsAsync");
+            _logger.LogInformation("Verificando existência do usuário: {Id}", id);
+            return await _repo.ExistsAsync(id);
         }
 
         public async Task<User> CreateUserAsync(RegisterDto registerDto)

@@ -1,7 +1,7 @@
-using FiapCloudGames.Application.Tracings;
+using FiapCloudGames.Application.Interfaces.Services;
 using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
+using FiapCloudGames.Shared.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Application.Services
@@ -9,21 +9,21 @@ namespace FiapCloudGames.Application.Services
     public class LibraryService : ILibraryService
     {
         private readonly ILibraryRepository _libraryRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IGameRepository _gameRepository;
+        private readonly IUserService _userService;
+        private readonly IGameService _gameService;
         private readonly IPromotionService _promotionService;
         private readonly ILogger<LibraryService> _logger;
 
         public LibraryService(
             ILibraryRepository libraryRepository,
-            IUserRepository userRepository,
-            IGameRepository gameRepository,
+            IUserService userService,
+            IGameService gameService,
             IPromotionService promotionService,
             ILogger<LibraryService> logger)
         {
             _libraryRepository = libraryRepository;
-            _userRepository = userRepository;
-            _gameRepository = gameRepository;
+            _userService = userService;
+            _gameService = gameService;
             _promotionService = promotionService;
             _logger = logger;
         }
@@ -33,7 +33,7 @@ namespace FiapCloudGames.Application.Services
         {
             using var activity = Tracing.ActivitySource.StartActivity($"{nameof(LibraryService)}.GetUserLibraryAsync");
             _logger.LogInformation("Buscando biblioteca do usuário: {UserId}", userId);
-            if (!await _userRepository.ExistsAsync(userId))
+            if (!await _userService.ExistsAsync(userId))
             {
                 _logger.LogWarning("Usuário não encontrado: {UserId}", userId);
                 throw new ArgumentException("Usuário não encontrado.");
@@ -54,13 +54,13 @@ namespace FiapCloudGames.Application.Services
         {
             using var activity = Tracing.ActivitySource.StartActivity($"{nameof(LibraryService)}.PurchaseGameAsync");
             _logger.LogInformation("Usuário {UserId} está tentando comprar o jogo {GameId}", userId, gameId);
-            if (!await _userRepository.ExistsAsync(userId))
+            if (!await _userService.ExistsAsync(userId))
             {
                 _logger.LogWarning("Usuário não encontrado: {UserId}", userId);
                 throw new ArgumentException("Usuário não encontrado.");
             }
 
-            var game = await _gameRepository.GetByIdAsync(gameId);
+            var game = await _gameService.GetByIdAsync(gameId);
             if (game == null)
             {
                 _logger.LogWarning("Jogo não encontrado: {GameId}", gameId);
@@ -92,7 +92,7 @@ namespace FiapCloudGames.Application.Services
 
         public async Task<bool> UserOwnsGameAsync(int userId, int gameId)
         {
-            return await _libraryRepository.UserOwnsGameAsync(userId, gameId);
+            return await _libraryRepository.ExistsAsync(userId, gameId);
         }
     }
 }

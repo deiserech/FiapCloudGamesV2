@@ -1,7 +1,7 @@
-using FiapCloudGames.Application.Tracings;
-using FiapCloudGames.Domain.Entities;
 using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Domain.Interfaces.Services;
+using FiapCloudGames.Application.Interfaces.Services;
+using FiapCloudGames.Domain.Entities;
+using FiapCloudGames.Shared.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace FiapCloudGames.Application.Services
@@ -129,7 +129,7 @@ namespace FiapCloudGames.Application.Services
             var bestPromotion = await GetBestPromotionForGameAsync(gameId);
 
 
-            return bestPromotion?.CalculateDiscountedPrice()??0;
+            return bestPromotion?.CalculateDiscountedPrice() ?? 0;
         }
 
         public async Task<Promotion?> GetBestPromotionForGameAsync(int gameId)
@@ -188,7 +188,7 @@ namespace FiapCloudGames.Application.Services
         {
             var activePromotions = await GetActivePromotionsByGameIdAsync(gameId);
 
-             var activeCount = activePromotions.Count();
+            var activeCount = activePromotions.Count();
 
             if (activeCount >= MaxActivePromotionsPerGame)
             {

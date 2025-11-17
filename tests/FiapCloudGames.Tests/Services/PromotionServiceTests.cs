@@ -4,7 +4,7 @@ using FiapCloudGames.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Microsoft.Extensions.Logging; // Adicionado para ILogger
+using Microsoft.Extensions.Logging;  
 
 namespace FiapCloudGames.Tests.Services
 {
@@ -12,18 +12,18 @@ namespace FiapCloudGames.Tests.Services
     {
         private readonly Mock<IPromotionRepository> _mockPromotionRepository;
         private readonly Mock<IGameRepository> _mockGameRepository;
-        private readonly Mock<ILogger<PromotionService>> _mockLogger; // Adicionado
+        private readonly Mock<ILogger<PromotionService>> _mockLogger; 
         private readonly PromotionService _promotionService;
 
         public PromotionServiceTests()
         {
             _mockPromotionRepository = new Mock<IPromotionRepository>();
             _mockGameRepository = new Mock<IGameRepository>();
-            _mockLogger = new Mock<ILogger<PromotionService>>(); // Adicionado
+            _mockLogger = new Mock<ILogger<PromotionService>>(); 
             _promotionService = new PromotionService(
                 _mockPromotionRepository.Object,
                 _mockGameRepository.Object,
-                _mockLogger.Object // Adicionado
+                _mockLogger.Object 
             );
         }
 

@@ -1,6 +1,6 @@
-using FiapCloudGames.Domain.DTOs;
-using FiapCloudGames.Domain.Interfaces.Services;
-using FiapCloudGames.Domain.Utils;
+using FiapCloudGames.Application.DTOs;
+using FiapCloudGames.Application.Interfaces.Services;
+using FiapCloudGames.Application.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FiapCloudGames.Api.Controllers

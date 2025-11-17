@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace FiapCloudGames.Domain.Utils
+namespace FiapCloudGames.Application.Utils
 {
     public static class ValidationHelper
     {

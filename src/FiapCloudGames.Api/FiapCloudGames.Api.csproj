@@ -12,6 +12,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Shared\FiapCloudGames.Shared.csproj" />
 		<ProjectReference Include="..\FiapCloudGames.Application\FiapCloudGames.Application.csproj" />
 		<ProjectReference Include="..\FiapCloudGames.Infrastructure\FiapCloudGames.Infrastructure.csproj" />
 	</ItemGroup>

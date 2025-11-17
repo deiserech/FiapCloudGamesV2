@@ -4,7 +4,7 @@ using FiapCloudGames.Infrastructure.Data;
 using FiapCloudGames.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure
+namespace FiapCloudGames.Infrastructure.Repositories
 {
     public class PromotionRepository : IPromotionRepository
     {
