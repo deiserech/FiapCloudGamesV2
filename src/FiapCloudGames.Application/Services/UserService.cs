@@ -1,31 +1,33 @@
-using FiapCloudGames.Shared.Tracing;
-using FiapCloudGames.Application.DTOs;
-using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Application.Interfaces.Services;
+using FiapCloudGames.Users.Shared.Tracing;
+using FiapCloudGames.Users.Application.DTOs;
+using FiapCloudGames.Users.Application.Interfaces.Services;
+using FiapCloudGames.Users.Domain.Entities;
+using FiapCloudGames.Users.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Application.Services
+namespace FiapCloudGames.Users.Application.Services
 {
-    public class UserService : Interfaces.Services.IUserService
+    public class UserService : IUserService
     {
-        private readonly Domain.Interfaces.Repositories.IUserRepository _repo;
+        private readonly IUserRepository _repo;
+        private readonly ILibraryRepository _libraryRepo;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(Domain.Interfaces.Repositories.IUserRepository repo, ILogger<UserService> logger)
+        public UserService(IUserRepository repo, ILibraryRepository libraryRepository, ILogger<UserService> logger)
         {
             _repo = repo;
+            _libraryRepo = libraryRepository;
             _logger = logger;
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.GetByIdAsync");
             _logger.LogInformation("Buscando usuário por ID: {Id}", id);
             return await _repo.GetByIdAsync(id);
         }
 
-        public async Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(Guid id)
         {
             using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.ExistsAsync");
             _logger.LogInformation("Verificando existência do usuário: {Id}", id);
@@ -48,6 +50,14 @@ namespace FiapCloudGames.Application.Services
             var created = await _repo.CreateAsync(user);
             _logger.LogInformation("Usuário criado com sucesso: {Email}", registerDto.Email);
             return created;
+        }
+
+        public async Task<IEnumerable<Library>> GetUserLibraryAsync(Guid userId)
+        {
+            using var activity = Tracing.ActivitySource.StartActivity($"{nameof(UserService)}.GetUserLibraryAsync");
+            _logger.LogInformation("Buscando biblioteca do usuário: {UserId}", userId);
+
+            return await _libraryRepo.GetByUserIdAsync(userId);
         }
     }
 }

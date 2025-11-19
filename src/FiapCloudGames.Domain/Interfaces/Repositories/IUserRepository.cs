@@ -1,16 +1,16 @@
-using FiapCloudGames.Domain.Entities;
+using FiapCloudGames.Users.Domain.Entities;
 
-namespace FiapCloudGames.Domain.Interfaces.Repositories
+namespace FiapCloudGames.Users.Domain.Interfaces.Repositories
 {
     public interface IUserRepository
     {
-        Task<User?> GetByIdAsync(int id);
+        Task<User?> GetByIdAsync(Guid id);
         Task<User?> GetByEmailAsync(string email);
         Task<IEnumerable<User>> GetAllAsync();
         Task<User> CreateAsync(User user);
         Task<User> UpdateAsync(User user);
-        Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(int id);
+        Task DeleteAsync(Guid id);
+        Task<bool> ExistsAsync(Guid id);
         Task<bool> EmailExistsAsync(string email);
     }
 }

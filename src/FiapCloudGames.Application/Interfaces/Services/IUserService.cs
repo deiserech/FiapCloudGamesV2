@@ -1,12 +1,13 @@
-using FiapCloudGames.Application.DTOs;
-using FiapCloudGames.Domain.Entities;
+using FiapCloudGames.Users.Application.DTOs;
+using FiapCloudGames.Users.Domain.Entities;
 
-namespace FiapCloudGames.Application.Interfaces.Services
+namespace FiapCloudGames.Users.Application.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<User?> GetByIdAsync(int id);
+        Task<User?> GetByIdAsync(Guid id);
         Task<User> CreateUserAsync(RegisterDto user);
-        Task<bool> ExistsAsync(int id);
+        Task<bool> ExistsAsync(Guid id);
+        Task<IEnumerable<Library>> GetUserLibraryAsync(Guid userId);
     }
 }

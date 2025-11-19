@@ -1,10 +1,10 @@
+using FiapCloudGames.Users.Domain.Entities;
+using FiapCloudGames.Users.Domain.Interfaces.Repositories;
+using FiapCloudGames.Users.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Infrastructure.Data;
-using FiapCloudGames.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure.Repositories
+namespace FiapCloudGames.Users.Infrastructure.Repositories
 {
     public class LibraryRepository : ILibraryRepository
     {
@@ -17,7 +17,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Library?> GetByIdAsync(int id)
+        public async Task<Library?> GetByIdAsync(Guid id)
         {
             _logger.LogDebug("Buscando entrada da biblioteca por ID: {Id}", id);
             return await _context.Libraries
@@ -26,7 +26,15 @@ namespace FiapCloudGames.Infrastructure.Repositories
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 
-        public async Task<IEnumerable<Library>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<Library>> GetByPurchaseIdAsync(Guid purchaseId)
+        {
+            _logger.LogDebug("Buscando biblioteca da compra: {purchaseId}", purchaseId);
+            return await _context.Libraries
+                .Where(l => l.PurchaseId == purchaseId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Library>> GetByUserIdAsync(Guid userId)
         {
             _logger.LogDebug("Buscando biblioteca do usuário: {UserId}", userId);
             return await _context.Libraries
@@ -43,11 +51,11 @@ namespace FiapCloudGames.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return await GetByIdAsync(library.Id) ?? library;
         }
-        public async Task<bool> ExistsAsync(int userId, int gameId)
+
+        public async Task<bool> ExistsAsync(Guid userId, Guid gameId)
         {
             return await _context.Libraries
                 .AnyAsync(l => l.UserId == userId && l.GameId == gameId);
         }
-
     }
 }

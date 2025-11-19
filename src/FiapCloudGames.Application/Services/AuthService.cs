@@ -1,24 +1,24 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FiapCloudGames.Application.DTOs;
-using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Application.Interfaces.Services;
-using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Shared.Tracing;
+using FiapCloudGames.Users.Application.DTOs;
+using FiapCloudGames.Users.Domain.Interfaces.Repositories;
+using FiapCloudGames.Users.Application.Interfaces.Services;
+using FiapCloudGames.Users.Domain.Entities;
+using FiapCloudGames.Users.Shared.Tracing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FiapCloudGames.Application.Services
+namespace FiapCloudGames.Users.Application.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly Domain.Interfaces.Repositories.IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(Domain.Interfaces.Repositories.IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -45,7 +45,6 @@ namespace FiapCloudGames.Application.Services
                 Token = token,
                 Email = user.Email,
                 Name = user.Name,
-                UserId = user.Id
             };
         }
 
@@ -78,7 +77,6 @@ namespace FiapCloudGames.Application.Services
                 Token = token,
                 Email = user.Email,
                 Name = user.Name,
-                UserId = user.Id
             };
         }
 

@@ -1,7 +1,9 @@
 
 using System.Diagnostics;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Api
+namespace FiapCloudGames.Users.Shared
 {
     public class ResourceLoggingService : BackgroundService
     {
@@ -43,7 +45,7 @@ namespace FiapCloudGames.Api
                         memUsagePct = (memLimitMb > 0) ? (memoryMb / memLimitMb) * 100.0 : null;
                     }
                 }
-                catch {  }
+                catch { }
 
                 lastCpuTime = process.TotalProcessorTime;
                 lastTime = now;

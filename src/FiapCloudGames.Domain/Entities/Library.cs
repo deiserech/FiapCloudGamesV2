@@ -1,25 +1,34 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using FiapCloudGames.Users.Domain.Events;
 
-namespace FiapCloudGames.Domain.Entities
+namespace FiapCloudGames.Users.Domain.Entities
 {
     public class Library
     {
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "O ID do usuário é obrigatório.")]
-        [Range(1, int.MaxValue, ErrorMessage = "O ID do usuário deve ser um número positivo.")]
-        public int UserId { get; set; }
-
-        [Required(ErrorMessage = "O ID do jogo é obrigatório.")]
-        [Range(1, int.MaxValue, ErrorMessage = "O ID do jogo deve ser um número positivo.")]
-        public int GameId { get; set; }
-
-        [JsonIgnore]
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public Guid GameId { get; set; }
+        public Guid PurchaseId { get; set; }
+        public DateTimeOffset AcquiredAt { get; set; }
         public User User { get; set; } = null!;
-
-        [JsonIgnore]
         public Game Game { get; set; } = null!;
+
+        public Library(Guid userId, Guid gameId, Guid purchaseId, DateTimeOffset acquiredAt)
+        {
+            UserId = userId;
+            GameId = gameId;
+            PurchaseId = purchaseId;
+            AcquiredAt = acquiredAt;
+        }
+
+        public static Library FromEvent(PurchaseCompletedEvent purchaseEvent)
+        {
+            return new Library(
+                purchaseEvent.UserId,
+                purchaseEvent.GameId,
+                purchaseEvent.PurchaseId,
+                purchaseEvent.ProcessedAt
+            );
+        }
     }
 }
 

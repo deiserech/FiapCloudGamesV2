@@ -12,13 +12,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FiapCloudGames.Application\FiapCloudGames.Application.csproj" />
-		<ProjectReference Include="..\FiapCloudGames.Infrastructure\FiapCloudGames.Infrastructure.csproj" />
-		<ProjectReference Include="..\FiapCloudGames.Shared\FiapCloudGames.Shared.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.18">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,6 +28,13 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.18" />
 		<PackageReference Include="System.Management" Version="9.0.9" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\FiapCloudGames.Application\FiapCloudGames.Users.Application.csproj" />
+	  <ProjectReference Include="..\FiapCloudGames.Infrastructure\FiapCloudGames.Users.Infrastructure.csproj" />
+	  <ProjectReference Include="..\FiapCloudGames.Shared\FiapCloudGames.Users.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,10 +1,10 @@
-using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Infrastructure.Data;
+using FiapCloudGames.Users.Domain.Entities;
+using FiapCloudGames.Users.Domain.Interfaces.Repositories;
+using FiapCloudGames.Users.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure.Repositories
+namespace FiapCloudGames.Users.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -17,7 +17,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             _logger.LogDebug("Buscando usuário por ID: {Id}", id);
             return await _context.Users
@@ -59,7 +59,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             return await GetByIdAsync(user.Id) ?? user;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             _logger.LogDebug("Deletando usuário por ID: {Id}", id);
             var user = await _context.Users.FindAsync(id);
@@ -70,7 +70,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Users.AnyAsync(u => u.Id == id);
         }

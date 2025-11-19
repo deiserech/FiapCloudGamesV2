@@ -1,9 +1,9 @@
-using FiapCloudGames.Application.DTOs;
-using FiapCloudGames.Application.Interfaces.Services;
-using FiapCloudGames.Application.Utils;
+using FiapCloudGames.Users.Application.DTOs;
+using FiapCloudGames.Users.Application.Interfaces.Services;
+using FiapCloudGames.Users.Application.Utils;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FiapCloudGames.Api.Controllers
+namespace FiapCloudGames.Users.Api.Controllers
 {
     /// <summary>
     /// Controller responsável pela autenticação e registro de usuários
@@ -32,19 +32,15 @@ namespace FiapCloudGames.Api.Controllers
         [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-       public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var result = await _authService.Login(loginDto);
-            
+
             if (result == null)
-            {
                 return Unauthorized(new { message = "Email ou senha inválidos" });
-            }
 
             return Ok(result);
         }
@@ -59,13 +55,12 @@ namespace FiapCloudGames.Api.Controllers
         [HttpPost("register")]
         [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-       public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
-            {
+
                 return BadRequest(ModelState);
-            }
- 
+
             var errors = ValidationHelper.ValidateRegisterEntries(registerDto.Password, registerDto.Email);
             if (errors.Any())
             {
@@ -77,11 +72,9 @@ namespace FiapCloudGames.Api.Controllers
             }
 
             var result = await _authService.Register(registerDto);
-            
+
             if (result == null)
-            {
                 return BadRequest(new { message = "Email já está em uso" });
-            }
 
             return Ok(result);
         }

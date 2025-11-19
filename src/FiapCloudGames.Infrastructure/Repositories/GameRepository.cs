@@ -1,10 +1,10 @@
-using FiapCloudGames.Domain.Entities;
-using FiapCloudGames.Domain.Interfaces.Repositories;
-using FiapCloudGames.Infrastructure.Data;
+using FiapCloudGames.Users.Domain.Entities;
+using FiapCloudGames.Users.Domain.Interfaces.Repositories;
+using FiapCloudGames.Users.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FiapCloudGames.Infrastructure.Repositories
+namespace FiapCloudGames.Users.Infrastructure.Repositories
 {
     public class GameRepository : IGameRepository
     {
@@ -17,22 +17,12 @@ namespace FiapCloudGames.Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Game?> GetByIdAsync(int id)
+        public async Task<Game?> GetByIdAsync(Guid id)
         {
             _logger.LogDebug("Buscando jogo por ID: {Id}", id);
             return await _context.Games
-                .Include(g => g.Promotions)
                 .Include(g => g.LibraryEntries)
                 .FirstOrDefaultAsync(g => g.Id == id);
-        }
-
-        public async Task<IEnumerable<Game>> GetAllAsync()
-        {
-            _logger.LogDebug("Listando todos os jogos");
-            return await _context.Games
-                .Include(g => g.Promotions)
-                .Include(g => g.LibraryEntries)
-                .ToListAsync();
         }
 
         public async Task<Game> CreateAsync(Game game)
@@ -50,7 +40,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             return await GetByIdAsync(game.Id) ?? game;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task RemoveAsync(Guid id)
         {
             _logger.LogDebug("Deletando jogo por ID: {Id}", id);
             var game = await _context.Games.FindAsync(id);
@@ -61,7 +51,7 @@ namespace FiapCloudGames.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Games.AnyAsync(g => g.Id == id);
         }

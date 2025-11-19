@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.18" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
@@ -20,11 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FiapCloudGames.Domain\FiapCloudGames.Domain.csproj" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\FiapCloudGames.Domain\FiapCloudGames.Users.Domain.csproj" />
+    <ProjectReference Include="..\FiapCloudGames.Shared\FiapCloudGames.Users.Shared.csproj" />
   </ItemGroup>
 
 </Project>
